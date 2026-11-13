@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Explore skills | SkillSwap</title><link rel="stylesheet" href="css/app.css">
+  <script defer src="js/config.js"></script><script defer src="js/api.js"></script><script defer src="js/ui.js"></script>
+  <script defer src="js/auth.js"></script><script defer src="js/layout.js"></script><script defer src="js/pages.js"></script>
+</head>
+<body class="app-page" data-protected="true" data-page="skills">
+  <div id="app-header"></div><main class="app-main">
+    <h1>Explore skills</h1><p class="page-intro">Share what you can teach and find what you want to learn.</p>
+    <form id="skill-form" class="app-form">
+      <h2>Add a skill you can teach</h2>
+      <label>Skill name<input name="name" maxlength="120" required></label>
+      <label>Category<select name="category_id" id="skill-category" required><option value="">Choose category</option></select></label>
+      <label>Description<textarea name="description" maxlength="2000"></textarea></label>
+      <label>Experience level<select name="experience_level"><option>Beginner</option><option>Intermediate</option><option>Advanced</option><option>Expert</option></select></label>
+      <button class="button button-primary" type="submit">Add skill</button>
+    </form>
+    <form id="learning-form" class="app-form">
+      <h2>Add a skill you want to learn</h2>
+      <label>Skill name<input name="skill_name" maxlength="120" required></label>
+      <label>Category<select name="category_id" id="learning-category"><option value="">Optional category</option></select></label>
+      <label>Current level<select name="level"><option>Beginner</option><option>Intermediate</option><option>Advanced</option><option>Expert</option></select></label>
+      <button class="button button-primary" type="submit">Add learning goal</button>
+    </form>
+    <h2 class="section-title">Skills I want to learn</h2><section id="learning-skills" class="page-grid"><p class="loading-state">Loading learning goals…</p></section>
+    <label>Search skills<input id="skill-filter" type="search" placeholder="Try Python or design"></label>
+    <section id="skills-list" class="page-grid" aria-live="polite"><p class="loading-state">Loading skills…</p></section>
+  </main>
+</body>
+</html>
