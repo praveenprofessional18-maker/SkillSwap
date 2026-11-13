@@ -4,6 +4,7 @@
 const form = document.getElementById("registerForm");
 
 const fullName = document.getElementById("fullName");
+const username = document.getElementById("username");
 const email = document.getElementById("email");
 const password = document.getElementById("password");
 const confirmPassword = document.getElementById("confirmPassword");
@@ -11,6 +12,7 @@ const language = document.getElementById("language");
 const terms = document.getElementById("terms");
 
 const nameError = document.getElementById("nameError");
+const usernameError = document.getElementById("usernameError");
 const emailError = document.getElementById("emailError");
 const passwordError = document.getElementById("passwordError");
 const confirmPasswordError = document.getElementById("confirmPasswordError");
@@ -58,11 +60,19 @@ function validateName(value) {
         return "Full name is required.";
     }
 
-    if (trimmed.length < 3) {
-        return "Name must contain at least 3 characters.";
+    if (trimmed.length < 2) {
+        return "Name must contain at least 2 characters.";
     }
 
     return '';
+}
+
+function validateUsername(value) {
+    const trimmed = value.trim();
+    if (!/^[A-Za-z0-9_.-]{3,40}$/.test(trimmed)) {
+        return "Use 3–40 letters, numbers, dots, underscores or hyphens.";
+    }
+    return "";
 }
 
 function validateEmail(value) {
@@ -108,6 +118,7 @@ function validateForm() {
     let isValid = true;
 
     const nameMessage = validateName(fullName.value);
+    const usernameMessage = validateUsername(username.value);
     const emailMessage = validateEmail(email.value);
     const passwordMessage = validatePassword(password.value);
     const confirmMessage = validateConfirmPassword(confirmPassword.value);
@@ -117,6 +128,13 @@ function validateForm() {
         isValid = false;
     } else {
         clearError(fullName, nameError);
+    }
+
+    if (usernameMessage) {
+        setError(username, usernameError, usernameMessage);
+        isValid = false;
+    } else {
+        clearError(username, usernameError);
     }
 
     if (emailMessage) {
@@ -167,6 +185,12 @@ fullName.addEventListener("input", () => {
     } else {
         clearError(fullName, nameError);
     }
+});
+
+username.addEventListener("input", () => {
+    const message = validateUsername(username.value);
+    if (message) setError(username, usernameError, message);
+    else clearError(username, usernameError);
 });
 
 email.addEventListener("input", () => {
@@ -265,9 +289,11 @@ form.addEventListener("submit", async (event) => {
         }
 
         await window.SkillSwapAPI.register({
-            name: fullName.value.trim(),
+            username: username.value.trim(),
+            full_name: fullName.value.trim(),
             email: email.value.trim(),
-            password: password.value
+            password: password.value,
+            language: language.value
         });
 
         successMessage.textContent =
@@ -278,7 +304,7 @@ form.addEventListener("submit", async (event) => {
         clearError(confirmPassword, confirmPasswordError);
     } catch (error) {
         successMessage.classList.add("is-error");
-        if (error.message === "Email already registered") {
+        if (error.message.toLowerCase().includes("already registered")) {
             successMessage.textContent =
                 "An account with this email already exists. Try signing in instead.";
         } else if (error.message === "Failed to fetch") {
