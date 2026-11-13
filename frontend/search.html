@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Search | SkillSwap</title><link rel="stylesheet" href="css/app.css">
+  <script defer src="js/config.js"></script><script defer src="js/api.js"></script><script defer src="js/ui.js"></script>
+  <script defer src="js/auth.js"></script><script defer src="js/layout.js"></script><script defer src="js/pages.js"></script>
+</head>
+<body class="app-page" data-protected="true" data-page="search">
+  <div id="app-header"></div><main class="app-main">
+    <h1>Search SkillSwap</h1><p class="page-intro">Find people, skills, categories, and community posts.</p>
+    <form id="search-form" class="app-form">
+      <label>Search<input name="q" type="search" placeholder="Search all SkillSwap" autofocus></label>
+      <label>Search in<select name="type"><option value="all">Everything</option><option value="users">People</option><option value="skills">Skills</option><option value="categories">Categories</option><option value="posts">Posts</option></select></label>
+      <label>Category<input name="category" placeholder="Optional category"></label>
+      <label>Experience level<select name="level"><option value="">Any level</option><option>Beginner</option><option>Intermediate</option><option>Advanced</option><option>Expert</option></select></label>
+      <label>Availability<input name="availability" placeholder="Optional"></label>
+      <label>Sort<select name="sort"><option value="recent">Recently added</option><option value="name">Name</option></select></label>
+    </form>
+    <section id="search-results" class="page-grid" aria-live="polite"><p class="loading-state">Searching…</p></section>
+    <div class="page-actions">
+      <button id="search-previous" class="button button-outline" type="button">Previous</button>
+      <span id="search-page-label" aria-live="polite"></span>
+      <button id="search-next" class="button button-outline" type="button">Next</button>
+    </div>
+  </main>
+</body>
+</html>

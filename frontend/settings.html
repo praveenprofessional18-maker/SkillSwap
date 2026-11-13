@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Settings | SkillSwap</title><link rel="stylesheet" href="css/app.css">
+  <script defer src="js/config.js"></script><script defer src="js/api.js"></script><script defer src="js/ui.js"></script>
+  <script defer src="js/auth.js"></script><script defer src="js/layout.js"></script><script defer src="js/pages.js"></script>
+</head>
+<body class="app-page" data-protected="true" data-page="settings">
+  <div id="app-header"></div><main class="app-main">
+    <h1>Settings</h1><p class="page-intro">Manage account visibility and availability.</p>
+    <form id="settings-form" class="app-form">
+      <p>Signed in as <strong id="settings-email"></strong></p>
+      <label>Availability<input id="settings-availability" maxlength="120" placeholder="Weekends, evenings…"></label>
+      <button class="button button-primary" type="submit">Save settings</button>
+      <button class="button button-outline" type="button" onclick="SkillSwapAPI.logout()">Log out</button>
+    </form>
+  </main>
+</body>
+</html>

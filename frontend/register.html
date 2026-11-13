@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Create your SkillSwap account and exchange skills.">
+  <meta name="theme-color" content="#07151c">
+
+  <title>SkillSwap | Create Account</title>
+
+  <link rel="stylesheet" href="css/register.css?v=2">
+  <script src="js/config.js" defer></script>
+  <script src="js/api.js?v=3" defer></script>
+  <script src="js/register.js?v=3" defer></script>
+</head>
+
+<body class="register-page">
+
+  <main class="register-shell">
+
+    <!-- Left visual section -->
+    <section class="register-visual">
+
+      <div class="brand-row">
+        <a class="brand" href="index.html">
+          <span class="brand-mark">S</span>
+          <span>skill<span class="brand-accent">swap</span></span>
+        </a>
+      </div>
+
+      <div class="visual-card">
+        <div class="illustration-frame">
+          <img
+            src="images/learning-together.jpg"
+            alt="People learning together">
+        </div>
+      </div>
+
+      <div class="visual-copy">
+        <span class="eyebrow">JOIN THE COMMUNITY</span>
+        <h1>Your skills.<br>Our community.<br>Endless possibilities.</h1>
+        <p>
+          Teach what you know, learn what you love,
+          and grow together with SkillSwap.
+        </p>
+      </div>
+
+    </section>
+
+    <!-- Registration form -->
+    <section class="register-panel">
+
+      <div class="register-card">
+
+        <div class="register-topbar">
+          <span class="status-dot"></span>
+          Create your account
+        </div>
+
+        <header class="register-header">
+          <p class="welcome-kicker">START YOUR JOURNEY</p>
+          <h2>Create an account</h2>
+          <p>Join SkillSwap and start exchanging skills.</p>
+        </header>
+
+        <form id="registerForm" novalidate>
+
+          <div class="field-group">
+            <label for="fullName">Full name</label>
+            <div class="input-wrap">
+              <input
+                type="text"
+                id="fullName"
+                name="fullName"
+                placeholder="Enter your full name"
+                autocomplete="name">
+            </div>
+            <p class="field-error" id="nameError" aria-live="polite"></p>
+          </div>
+
+          <div class="field-group">
+            <label for="username">Username</label>
+            <div class="input-wrap">
+              <input type="text" id="username" name="username" placeholder="e.g. curious_learner"
+                autocomplete="username" minlength="3" maxlength="40" required>
+            </div>
+            <p class="field-error" id="usernameError" aria-live="polite"></p>
+          </div>
+
+          <div class="field-group">
+            <label for="email">Email address</label>
+            <div class="input-wrap">
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="you@example.com"
+                autocomplete="email">
+            </div>
+            <p class="field-error" id="emailError" aria-live="polite"></p>
+          </div>
+
+          <div class="field-group">
+            <label for="password">Password</label>
+            <div class="input-wrap">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Create a password"
+                autocomplete="new-password"
+                maxlength="72">
+              <button class="toggle-password"
+                type="button" data-target="password">Show</button>
+            </div>
+            <p class="field-error" id="passwordError" aria-live="polite"></p>
+          </div>
+
+          <div class="field-group">
+            <label for="confirmPassword">Confirm password</label>
+            <div class="input-wrap">
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                placeholder="Re-enter your password"
+                autocomplete="new-password"
+                maxlength="72">
+              <button class="toggle-password"
+                type="button" data-target="confirmPassword">Show</button>
+            </div>
+            <p class="field-error" id="confirmPasswordError" aria-live="polite"></p>
+          </div>
+
+          <div class="field-group">
+            <label for="language">Preferred language</label>
+            <div class="input-wrap">
+              <select id="language" name="language">
+                <option value="">Select your language</option>
+                <option value="English">English</option>
+                <option value="Tamil">Tamil</option>
+                <option value="Hindi">Hindi</option>
+                <option value="Telugu">Telugu</option>
+                <option value="Malayalam">Malayalam</option>
+                <option value="Kannada">Kannada</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <p class="field-error" id="languageError" aria-live="polite"></p>
+          </div>
+
+          <p class="form-note">Add teaching and learning skills after creating your account.</p>
+
+          <div class="terms-row">
+            <label class="checkbox-wrap">
+              <input type="checkbox" id="terms">
+              <span>I agree to the Terms and Conditions</span>
+            </label>
+            <p class="field-error" id="termsError" aria-live="polite"></p>
+          </div>
+
+          <button type="submit" class="register-button">
+            Create Account
+          </button>
+
+          <p class="form-success" id="formSuccess" aria-live="polite"></p>
+
+        </form>
+
+        <p class="login-copy">
+          Already have an account?
+          <a href="login.html" class="text-link">Log in</a>
+        </p>
+
+      </div>
+    </section>
+
+  </main>
+
+</body>
+</html>
