@@ -2,10 +2,6 @@
 
 const menuToggle = document.querySelector(".menu-toggle");
 const navigation = document.querySelector("#primary-navigation");
-const filterButtons = [...document.querySelectorAll(".filter-chip")];
-const courseCards = [...document.querySelectorAll("[data-course-category]")];
-const filterStatus = document.querySelector("#filter-status");
-const categoryLinks = [...document.querySelectorAll("[data-category-link]")];
 
 function closeNavigation() {
   if (!menuToggle || !navigation) return;
@@ -35,40 +31,64 @@ if (menuToggle && navigation) {
   });
 }
 
-function filterCourses(category) {
-  let visibleCount = 0;
-  courseCards.forEach(card => {
-    const matches = category === "all" || card.dataset.courseCategory === category;
-    card.hidden = !matches;
-    if (matches) visibleCount += 1;
-  });
-
-  filterButtons.forEach(button => {
-    const isActive = button.dataset.filter === category;
-    button.classList.toggle("is-active", isActive);
-    button.setAttribute("aria-pressed", String(isActive));
-  });
-
-  if (filterStatus) {
-    filterStatus.textContent = visibleCount === 0
-      ? "No featured classes in this category just yet. Check back soon."
-      : category === "all" ? "" : `${visibleCount} featured ${visibleCount === 1 ? "class" : "classes"} in this category.`;
-  }
-}
-
-filterButtons.forEach(button => {
-  button.addEventListener("click", () => filterCourses(button.dataset.filter || "all"));
-});
-
-categoryLinks.forEach(link => {
-  link.addEventListener("click", () => {
-    const category = link.dataset.categoryLink || "all";
-    filterCourses(category);
-  });
-});
-
 const year = document.querySelector("#current-year");
 if (year) year.textContent = String(new Date().getFullYear());
+
+async function loadLandingData() {
+  const categoryGrid = document.querySelector("#category-grid");
+  const featured = document.querySelector("#featured-skills");
+  if (!categoryGrid || !featured) return;
+  const [categories, skills] = await Promise.all([
+    window.SkillSwapAPI.request("/api/skills/categories?page_size=100"),
+    window.SkillSwapAPI.skills({ page: 1, page_size: 6 })
+  ]);
+  categoryGrid.replaceChildren();
+  categories.items.forEach((category, index) => {
+    const link = document.createElement("a");
+    link.className = `category-card category-${["lavender", "blue", "peach", "mint", "yellow", "pink"][index % 6]}`;
+    link.href = `skills.html?category=${encodeURIComponent(category.name)}`;
+    const icon = document.createElement("span");
+    icon.className = "category-icon";
+    icon.setAttribute("aria-hidden", "true");
+    icon.textContent = "✳";
+    const title = document.createElement("h3");
+    title.textContent = category.name;
+    const action = document.createElement("span");
+    action.className = "category-link";
+    action.textContent = "Explore skills ↗";
+    link.append(icon, title, action);
+    categoryGrid.append(link);
+  });
+  featured.replaceChildren();
+  if (!skills.items.length) {
+    const empty = document.createElement("p");
+    empty.className = "filter-status";
+    empty.textContent = "No community skills have been added yet. Create an account and share what you can teach.";
+    featured.append(empty);
+    return;
+  }
+  skills.items.forEach((skill) => {
+    const card = document.createElement("article");
+    card.className = "content-card";
+    const title = document.createElement("h3");
+    title.textContent = skill.name;
+    const category = document.createElement("p");
+    category.textContent = `${skill.category} · ${skill.experience_level}`;
+    const owner = document.createElement("small");
+    owner.textContent = `Shared by @${skill.owner_username}`;
+    card.append(title, category, owner);
+    featured.append(card);
+  });
+}
+
+loadLandingData().catch(error => {
+  document.querySelectorAll("#category-grid, #featured-skills").forEach((container) => {
+    const message = document.createElement("p");
+    message.className = "filter-status";
+    message.textContent = error.message || "Community data is unavailable right now.";
+    container.replaceChildren(message);
+  });
+});
 
 const revealElements = [...document.querySelectorAll(".reveal")];
 if ("IntersectionObserver" in window && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
