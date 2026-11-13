@@ -1,0 +1,347 @@
+
+/* ==============================
+   SkillSwap Registration Page
+============================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #07151c;
+    color: #ffffff;
+    min-height: 100vh;
+}
+
+.register-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 35px 20px;
+}
+
+.register-shell {
+    width: 100%;
+    max-width: 1150px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 45px;
+    align-items: center;
+}
+
+/* Brand */
+
+.brand-row {
+    margin-bottom: 35px;
+}
+
+.brand {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 28px;
+    font-weight: 800;
+}
+
+.brand-accent {
+    color: #7c5cff;
+}
+
+/* Visual section */
+
+.register-visual {
+    padding: 25px;
+}
+
+.illustration-frame {
+    width: 100%;
+    border-radius: 22px;
+    overflow: hidden;
+    margin-bottom: 30px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.illustration-frame img {
+    display: block;
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+
+.eyebrow {
+    color: #73d6b6;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 14px;
+}
+
+.visual-copy h1 {
+    font-size: 38px;
+    line-height: 1.2;
+    margin-bottom: 16px;
+}
+
+.visual-copy p {
+    color: #aab8c0;
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+/* Registration panel */
+
+.register-panel {
+    width: 100%;
+}
+
+.register-card {
+    background: #10232d;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 35px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.register-topbar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 25px;
+}
+
+.status-dot {
+    width: 9px;
+    height: 9px;
+    background: #73d6b6;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 7px;
+}
+
+.register-header {
+    margin-bottom: 28px;
+}
+
+.welcome-kicker {
+    color: #73d6b6;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+.register-header h2 {
+    font-size: 29px;
+    margin-bottom: 10px;
+}
+
+.register-header p {
+    color: #aab8c0;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Form fields */
+
+.field-group {
+    margin-bottom: 19px;
+}
+
+.field-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 9px;
+}
+
+.input-wrap {
+    display: flex;
+    align-items: center;
+    background: #091a23;
+    border: 1px solid #29404c;
+    border-radius: 9px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+
+.input-wrap:focus-within {
+    border-color: #7c5cff;
+}
+
+.input-wrap input,
+.field-group select,
+.field-group textarea {
+    width: 100%;
+    padding: 13px 14px;
+    background: #091a23;
+    border: 1px solid #29404c;
+    border-radius: 9px;
+    outline: none;
+    color: #ffffff;
+    font-size: 14px;
+}
+
+.input-wrap input {
+    border: none;
+    background: transparent;
+}
+
+.input-wrap input::placeholder,
+.field-group textarea::placeholder {
+    color: #71838d;
+}
+
+.field-group select {
+    cursor: pointer;
+}
+
+.field-group select option {
+    background: #10232d;
+}
+
+.field-group textarea {
+    resize: vertical;
+    min-height: 75px;
+}
+
+.toggle-password {
+    border: none;
+    background: transparent;
+    color: #73d6b6;
+    padding: 0 14px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.field-error {
+    display: block;
+    color: #ff7777;
+    font-size: 12px;
+    margin-top: 6px;
+    min-height: 14px;
+}
+
+.input-wrap.input-error,
+.field-group select.input-error {
+    border-color: #ff7777;
+}
+
+/* Terms checkbox */
+
+.terms-row {
+    margin: 20px 0;
+}
+
+.checkbox-wrap {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: #aab8c0;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.checkbox-wrap input {
+    margin-top: 3px;
+    accent-color: #7c5cff;
+}
+
+/* Register button */
+
+.register-button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #7c5cff, #6543df);
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s, opacity 0.2s;
+}
+
+.register-button:hover {
+    transform: translateY(-2px);
+    opacity: 0.95;
+}
+
+.form-success {
+    color: #73d6b6;
+    font-size: 13px;
+    margin-top: 15px;
+    line-height: 1.5;
+}
+
+.form-success.is-error {
+    color: #ff7777;
+}
+
+.form-note {
+    color: #aab8c0;
+    font-size: 12px;
+    line-height: 1.5;
+    margin: -4px 0 18px;
+}
+
+.register-button:disabled {
+    cursor: wait;
+    opacity: 0.75;
+}
+
+.login-copy {
+    text-align: center;
+    color: #aab8c0;
+    font-size: 14px;
+    margin-top: 23px;
+}
+
+.text-link {
+    color: #73d6b6;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.text-link:hover {
+    text-decoration: underline;
+}
+
+/* Responsive design */
+
+@media (max-width: 850px) {
+    .register-shell {
+        grid-template-columns: 1fr;
+        max-width: 550px;
+        gap: 25px;
+    }
+
+    .register-visual {
+        padding: 0;
+    }
+
+    .illustration-frame img {
+        height: 220px;
+    }
+
+    .visual-copy h1 {
+        font-size: 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    .register-page {
+        padding: 20px 12px;
+    }
+
+    .register-card {
+        padding: 23px 18px;
+    }
+
+    .register-header h2 {
+        font-size: 25px;
+    }
+
+    .visual-copy h1 {
+        font-size: 27px;
+    }
+}
