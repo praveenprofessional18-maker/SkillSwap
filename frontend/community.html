@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Community | SkillSwap</title><link rel="stylesheet" href="css/app.css">
+  <script defer src="js/config.js"></script><script defer src="js/api.js"></script><script defer src="js/ui.js"></script>
+  <script defer src="js/auth.js"></script><script defer src="js/layout.js"></script><script defer src="js/pages.js"></script>
+</head>
+<body class="app-page" data-protected="true" data-page="community">
+  <div id="app-header"></div><main class="app-main">
+    <h1>Community</h1><p class="page-intro">Share progress, ask questions, and learn together. SkillSwap exchanges are not paid.</p>
+    <form id="post-form" class="app-form">
+      <label>What's on your mind?<textarea name="content" maxlength="5000" required></textarea></label>
+      <label>Add an image or video (JPG, PNG, WEBP, MP4, WEBM)<input id="post-media" type="file" accept=".jpg,.jpeg,.png,.webp,.mp4,.webm"></label>
+      <button class="button button-primary" type="submit">Publish post</button>
+    </form>
+    <label>Search posts<input id="post-search" type="search" placeholder="Search post text"></label>
+    <section id="posts-list" class="page-grid" aria-live="polite"><p class="loading-state">Loading posts…</p></section>
+    <div class="page-actions">
+      <button id="posts-previous" class="button button-outline" type="button">Previous</button>
+      <span id="posts-page-label" aria-live="polite"></span>
+      <button id="posts-next" class="button button-outline" type="button">Next</button>
+    </div>
+  </main>
+</body>
+</html>
