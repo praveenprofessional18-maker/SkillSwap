@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="SkillSwap login page" />
+    <meta name="theme-color" content="#6938df" />
+    <title>SkillSwap | Login</title>
+    <link rel="stylesheet" href="css/login.css" />
+    <script src="js/login.js" defer></script>
+  </head>
+  <body class="login-page">
+    <main class="login-shell" aria-label="SkillSwap login page">
+      <section class="login-visual" aria-label="SkillSwap community illustration">
+        <div class="visual-overlay"></div>
+        <div class="brand-row">
+          <a class="brand" href="index.html" aria-label="SkillSwap home">
+            <span class="brand-mark" aria-hidden="true">
+              <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                <path d="M8 11.5 16 7l8 4.5-8 4.6-8-4.6Z" fill="currentColor"/>
+                <path d="m8 16 8 4.6 8-4.6M8 20.5l8 4.6 8-4.6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span>skill<span class="brand-accent">swap</span></span>
+          </a>
+        </div>
+
+        <div class="visual-card">
+          <div class="illustration-frame">
+            <img src="images/learning-together.jpg" alt="People learning and collaborating together" />
+          </div>
+          <div class="mini-stats" aria-label="SkillSwap community highlights">
+            <div>
+              <strong>12k+</strong>
+              <span>learners</span>
+            </div>
+            <div>
+              <strong>860</strong>
+              <span>skills shared</span>
+            </div>
+            <div>
+              <strong>4.9/5</strong>
+              <span>community rating</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="visual-copy">
+          <span class="eyebrow">A COMMUNITY OF CURIOUS PEOPLE</span>
+          <h1>Learn together.<br />Grow together.</h1>
+          <p>Exchange practical skills, share real experience, and build momentum with people who love to learn.</p>
+        </div>
+      </section>
+
+      <section class="login-panel" aria-labelledby="login-title">
+        <div class="login-card">
+          <div class="login-topbar">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span>Secure sign in</span>
+          </div>
+
+          <div class="login-header">
+            <p class="welcome-kicker">Welcome back</p>
+            <h2 id="login-title">Log in to SkillSwap</h2>
+          </div>
+
+          <form id="loginForm" novalidate>
+            <div class="field-group">
+              <label for="email">Email address</label>
+              <div class="input-wrap">
+                <span class="input-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h11A2.5 2.5 0 0 1 20 7.5v9A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5v-9Zm2.3.8 5.7 4.1 5.7-4.1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+                <input id="email" name="email" type="email" placeholder="you@example.com" autocomplete="email" aria-invalid="false" />
+              </div>
+              <p class="field-error" id="emailError" aria-live="polite"></p>
+            </div>
+
+            <div class="field-group">
+              <div class="label-row">
+                <label for="password">Password</label>
+                <a href="#" class="text-link" aria-label="Reset your password">Forgot password?</a>
+              </div>
+              <div class="input-wrap">
+                <span class="input-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M7 10V8a5 5 0 1 1 10 0v2M6.5 10h11a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+                <input id="password" name="password" type="password" placeholder="Enter your password" autocomplete="current-password" aria-invalid="false" />
+                <button class="toggle-password" type="button" aria-label="Show password">Show</button>
+              </div>
+              <p class="field-error" id="passwordError" aria-live="polite"></p>
+            </div>
+
+            <div class="form-row">
+              <label class="checkbox-wrap" for="rememberMe">
+                <input id="rememberMe" name="rememberMe" type="checkbox" />
+                <span>Remember me</span>
+              </label>
+            </div>
+
+            <button class="login-button" type="submit">Log in</button>
+
+            <p class="form-success" id="formSuccess" aria-live="polite"></p>
+          </form>
+
+          <div class="divider" aria-label="Other ways to sign in">
+            <span>or continue with</span>
+          </div>
+
+          <div class="socials" aria-label="Social sign in options">
+            <button type="button" class="social-button" aria-label="Continue with Google">
+              <span class="social-icon google" aria-hidden="true">G</span>
+              Google
+            </button>
+            <button type="button" class="social-button" aria-label="Continue with GitHub">
+              <span class="social-icon github" aria-hidden="true">◌</span>
+              GitHub
+            </button>
+          </div>
+
+          <p class="register-copy">
+            New to SkillSwap?
+            <a href="#" class="text-link register-link">Create an account</a>
+          </p>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
