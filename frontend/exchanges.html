@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Exchanges | SkillSwap</title><link rel="stylesheet" href="css/app.css">
+  <script defer src="js/config.js"></script><script defer src="js/api.js"></script><script defer src="js/ui.js"></script>
+  <script defer src="js/auth.js"></script><script defer src="js/layout.js"></script><script defer src="js/pages.js"></script>
+</head>
+<body class="app-page" data-protected="true" data-page="exchanges">
+  <div id="app-header"></div><main class="app-main">
+    <h1>Skill exchanges</h1><p class="page-intro">Agree on a duration together. No money changes hands.</p>
+    <form id="exchange-form" class="app-form">
+      <h2>Request an exchange</h2>
+      <label>Your teaching skill<select id="offered-skill" required><option value="">Choose your skill</option></select></label>
+      <label>The skill you'd like to learn<select id="requested-skill" required><option value="">Choose a skill</option></select></label>
+      <label>Proposed duration (days)<input id="duration-days" type="number" min="1" max="365" value="7" required></label>
+      <button class="button button-primary" type="submit">Send request</button>
+    </form>
+    <h2 class="section-title">Requests received</h2><section id="requests-received" class="page-grid"><p class="loading-state">Loading…</p></section>
+    <h2 class="section-title">Requests sent</h2><section id="requests-sent" class="page-grid"><p class="loading-state">Loading…</p></section>
+    <h2 class="section-title">Active exchanges</h2><section id="exchanges-active" class="page-grid"><p class="loading-state">Loading…</p></section>
+    <h2 class="section-title">History</h2><section id="exchanges-history" class="page-grid"><p class="loading-state">Loading…</p></section>
+  </main>
+</body>
+</html>
