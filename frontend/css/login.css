@@ -423,6 +423,15 @@ label {
   font-weight: 600;
 }
 
+.form-success.is-error {
+  color: var(--danger);
+}
+
+.login-button:disabled {
+  cursor: wait;
+  opacity: 0.75;
+}
+
 .divider {
   position: relative;
   margin: 24px 0 18px;
