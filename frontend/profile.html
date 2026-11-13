@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My profile | SkillSwap</title><link rel="stylesheet" href="css/app.css">
+  <script defer src="js/config.js"></script><script defer src="js/api.js"></script><script defer src="js/ui.js"></script>
+  <script defer src="js/auth.js"></script><script defer src="js/layout.js"></script><script defer src="js/pages.js"></script>
+</head>
+<body class="app-page" data-protected="true" data-page="profile">
+  <div id="app-header"></div><main class="app-main">
+    <h1>My profile</h1><p class="page-intro">Help other members learn who you are and what you want to learn.</p>
+    <form id="profile-form" class="app-form">
+      <label>Full name<input name="full_name" id="full_name" minlength="2" maxlength="100" required></label>
+      <label>Bio<textarea name="bio" id="bio" maxlength="2000"></textarea></label>
+      <label>Location<input name="location" id="location" maxlength="120"></label>
+      <label>Experience level<select name="experience_level" id="experience_level">
+        <option>Beginner</option><option>Intermediate</option><option>Advanced</option><option>Expert</option>
+      </select></label>
+      <label>Availability<input name="availability" id="availability" maxlength="120" placeholder="Weekends, evenings…"></label>
+      <label>Preferred language<input name="language" id="language" maxlength="80"></label>
+      <button class="button button-primary" type="submit">Save profile</button>
+    </form>
+  </main>
+</body>
+</html>
