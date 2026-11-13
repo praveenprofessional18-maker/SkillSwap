@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard | SkillSwap</title><link rel="stylesheet" href="css/app.css">
+  <script defer src="js/config.js"></script><script defer src="js/api.js"></script>
+  <script defer src="js/ui.js"></script><script defer src="js/auth.js"></script>
+  <script defer src="js/layout.js"></script><script defer src="js/pages.js"></script>
+</head>
+<body class="app-page" data-protected="true" data-page="dashboard">
+  <div id="app-header"></div><main class="app-main">
+    <h1 id="welcome">Your dashboard</h1><p class="page-intro">Your learning and teaching activity at a glance.</p>
+    <section class="page-grid" aria-label="Your activity">
+      <article class="content-card"><h2>Community skills</h2><p id="skills-count" class="metric">—</p></article>
+      <article class="content-card"><h2>Community posts</h2><p id="posts-count" class="metric">—</p></article>
+      <article class="content-card"><h2>Active exchanges</h2><p id="exchanges-count" class="metric">—</p></article>
+      <article class="content-card"><h2>Unread notifications</h2><p id="unread-count" class="metric">—</p></article>
+    </section>
+    <h2 class="section-title">Recent community posts</h2><section id="recent-posts" class="page-grid"><p class="loading-state">Loading posts…</p></section>
+  </main>
+</body>
+</html>
