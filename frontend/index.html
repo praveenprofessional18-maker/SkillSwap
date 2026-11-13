@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#6938df">
+  <meta name="description" content="Learn something new and share what you know with SkillSwap, the community-powered learning marketplace.">
+  <title>SkillSwap — learn together, grow together</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#home" aria-label="SkillSwap home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none"><path d="M8 11.5 16 7l8 4.5-8 4.6-8-4.6Z" fill="currentColor"/><path d="m8 16 8 4.6 8-4.6M8 20.5l8 4.6 8-4.6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span>skill<span class="brand-accent">swap</span></span>
+      </a>
+
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation" aria-label="Open navigation">
+        <span></span><span></span>
+      </button>
+
+      <nav class="primary-nav" id="primary-navigation" aria-label="Main navigation">
+        <a href="#categories">Explore skills</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#pricing">Pricing</a>
+        <a class="button button-small button-outline nav-cta" href="#join">Join the community <span aria-hidden="true">↗</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero section-wrap" id="home">
+      <div class="hero-glow" aria-hidden="true"></div>
+      <div class="container hero-grid">
+        <div class="hero-visual reveal">
+          <img class="hero-image" src="images/learning-together.jpg" alt="Illustration of a learner writing in a notebook at a desk surrounded by books and study notes">
+        </div>
+
+        <div class="hero-copy reveal">
+          <span class="eyebrow"><span class="eyebrow-dot"></span> THE SKILL EXCHANGE COMMUNITY</span>
+          <h1>Your skills have value.<br><span class="gradient-text">Someone needs them.</span></h1>
+          <p class="hero-description">Learn practical skills—from Python and APIs to UI/UX design and data tools—then share what you know with real people.</p>
+          <ul class="template-features">
+            <li><span aria-hidden="true">✦</span> Discover new skills</li>
+            <li><span aria-hidden="true">✦</span> Connect with real learners</li>
+            <li><span aria-hidden="true">✦</span> Exchange what you know</li>
+          </ul>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#categories">Explore skills <span aria-hidden="true">↗</span></a>
+            <a class="text-link" href="#how-it-works">How it works <span aria-hidden="true">↗</span></a>
+          </div>
+          <p class="hero-tagline">✦&nbsp; Learn&nbsp; · &nbsp;Exchange&nbsp; · &nbsp;Grow</p>
+          <ul class="hero-tech-tags" aria-label="Featured technical skills">
+            <li>PYTHON</li><li>APIs</li><li>UI/UX</li><li>DATA</li>
+          </ul>
+        </div>
+      </div>
+      <div class="container hero-bottom reveal"><span>A COMMUNITY WHERE EVERYONE HAS SOMETHING TO TEACH</span><span class="hero-bottom-line"></span><span>LEARN · EXCHANGE · GROW <span class="accent-star">✳</span></span></div>
+    </section>
+
+    <section class="trust-strip" aria-label="SkillSwap values">
+      <div class="container trust-inner reveal">
+        <p>LESS SCROLLING, MORE <span class="gradient-text">GROWING</span></p>
+        <span><i>✳</i> Learn by doing</span><span><i>✳</i> Give what you get</span><span><i>✳</i> Find your people</span>
+      </div>
+    </section>
+
+    <section class="section-wrap categories-section" id="categories">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div><span class="eyebrow">A LITTLE SOMETHING FOR EVERYONE</span><h2>What are you <span class="gradient-text">curious about?</span></h2></div>
+          <p>Explore new skills in creative practice, software, data, and everyday life.</p>
+        </div>
+        <div class="category-grid">
+          <a class="category-card category-lavender reveal" href="#featured" data-category-link="creative">
+            <span class="category-icon" aria-hidden="true">✳</span><span class="category-count">24 SKILLS</span><h3>Creative arts</h3><span class="category-link">Explore the unexpected <b aria-hidden="true">↗</b></span>
+          </a>
+          <a class="category-card category-blue reveal" href="#featured" data-category-link="tech">
+            <span class="category-icon" aria-hidden="true">⌘</span><span class="category-count">18 SKILLS</span><h3>Tech &amp; code</h3><span class="category-link">Build your next thing <b aria-hidden="true">↗</b></span>
+          </a>
+          <a class="category-card category-peach reveal" href="#featured" data-category-link="wellness">
+            <span class="category-icon" aria-hidden="true">☼</span><span class="category-count">16 SKILLS</span><h3>Mind &amp; body</h3><span class="category-link">Make space for you <b aria-hidden="true">↗</b></span>
+          </a>
+          <a class="category-card category-mint reveal" href="#featured" data-category-link="business">
+            <span class="category-icon" aria-hidden="true">↗</span><span class="category-count">21 SKILLS</span><h3>Work &amp; business</h3><span class="category-link">Take your next step <b aria-hidden="true">↗</b></span>
+          </a>
+          <a class="category-card category-yellow reveal" href="#featured" data-category-link="language">
+            <span class="category-icon" aria-hidden="true">あ</span><span class="category-count">12 SKILLS</span><h3>Language &amp; culture</h3><span class="category-link">See the world differently <b aria-hidden="true">↗</b></span>
+          </a>
+          <a class="category-card category-pink reveal" href="#featured" data-category-link="everyday">
+            <span class="category-icon" aria-hidden="true">♡</span><span class="category-count">30 SKILLS</span><h3>Everyday life</h3><span class="category-link">Learn something useful <b aria-hidden="true">↗</b></span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-wrap featured-section" id="featured">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div><span class="eyebrow">GOOD PEOPLE, GREAT THINGS TO LEARN</span><h2>Picked for your <span class="gradient-text">curious side.</span></h2></div>
+          <a class="text-link browse-link" href="#categories">Browse all skills <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="filter-row reveal" aria-label="Filter classes by skill category">
+          <button class="filter-chip is-active" type="button" data-filter="all" aria-pressed="true">A little bit of everything</button>
+          <button class="filter-chip" type="button" data-filter="creative" aria-pressed="false">Creative</button>
+          <button class="filter-chip" type="button" data-filter="tech" aria-pressed="false">Tech</button>
+          <button class="filter-chip" type="button" data-filter="wellness" aria-pressed="false">Wellness</button>
+          <button class="filter-chip" type="button" data-filter="business" aria-pressed="false">Business</button>
+          <button class="filter-chip" type="button" data-filter="language" aria-pressed="false">Language</button>
+          <button class="filter-chip" type="button" data-filter="everyday" aria-pressed="false">Everyday</button>
+        </div>
+        <div class="course-grid" id="course-grid">
+          <article class="course-card reveal" data-course-category="creative">
+            <div class="course-art course-art-creative"><span class="art-tag">MAKE SOMETHING</span><span class="course-art-mark">✳</span><span class="course-art-label">color<br>outside</span></div>
+            <div class="course-body"><div class="course-meta"><span>CREATIVE ARTS</span><span>↗ 4 WEEKS</span></div><h3>Watercolor for the wonderfully curious</h3><div class="course-footer"><span class="course-teacher"><i class="teacher-avatar teacher-lilac">AR</i> Alex Rivera</span><span class="course-rating">★ 4.9 <small>(28)</small></span></div></div>
+          </article>
+          <article class="course-card reveal" data-course-category="tech">
+            <div class="course-art course-art-tech"><span class="art-tag">MAKE IT REAL</span><span class="code-window"><i></i><i></i><i></i><b>&lt;hello /&gt;</b><small class="code-terms">HTML · CSS · REST API</small></span><span class="code-spark">✦</span></div>
+            <div class="course-body"><div class="course-meta"><span>TECH &amp; CODE</span><span>↗ 3 WEEKS</span></div><h3>Build your first website, your way</h3><div class="course-footer"><span class="course-teacher"><i class="teacher-avatar teacher-blue">JM</i> Jordan Miles</span><span class="course-rating">★ 5.0 <small>(41)</small></span></div></div>
+          </article>
+          <article class="course-card reveal" data-course-category="wellness">
+            <div class="course-art course-art-wellness"><span class="art-tag">FIND YOUR FLOW</span><span class="wellness-sun"></span><span class="wellness-wave"></span><span class="wellness-word">breathe<br>in, begin</span></div>
+            <div class="course-body"><div class="course-meta"><span>MIND &amp; BODY</span><span>↗ 2 WEEKS</span></div><h3>A softer start to a mindful morning</h3><div class="course-footer"><span class="course-teacher"><i class="teacher-avatar teacher-peach">SP</i> Sam Patel</span><span class="course-rating">★ 4.9 <small>(19)</small></span></div></div>
+          </article>
+          <article class="course-card reveal" data-course-category="business">
+            <div class="course-art course-art-business"><span class="art-tag">THINK BIGGER</span><span class="business-spark">✳</span><span class="business-note">your<br>next idea<br>starts here.</span></div>
+            <div class="course-body"><div class="course-meta"><span>WORK &amp; BUSINESS</span><span>↗ 3 WEEKS</span></div><h3>Turn your side project into a plan</h3><div class="course-footer"><span class="course-teacher"><i class="teacher-avatar teacher-green">TC</i> Taylor Cole</span><span class="course-rating">★ 4.8 <small>(32)</small></span></div></div>
+          </article>
+          <article class="course-card reveal" data-course-category="language">
+            <div class="course-art course-art-language"><span class="art-tag">SAY HELLO</span><span class="language-glyph">你好</span><span class="language-caption">a new word,<br>a new world.</span></div>
+            <div class="course-body"><div class="course-meta"><span>LANGUAGE &amp; CULTURE</span><span>↗ 4 WEEKS</span></div><h3>Mandarin for real-life conversations</h3><div class="course-footer"><span class="course-teacher"><i class="teacher-avatar teacher-yellow">LW</i> Linh Wu</span><span class="course-rating">★ 5.0 <small>(24)</small></span></div></div>
+          </article>
+          <article class="course-card reveal" data-course-category="everyday">
+            <div class="course-art course-art-everyday"><span class="art-tag">A LITTLE MORE YOU</span><span class="everyday-scribble">♡</span><span class="everyday-note">make<br>it by hand</span></div>
+            <div class="course-body"><div class="course-meta"><span>EVERYDAY LIFE</span><span>↗ 2 WEEKS</span></div><h3>Make a home that feels like yours</h3><div class="course-footer"><span class="course-teacher"><i class="teacher-avatar teacher-pink">KB</i> Kai Brooks</span><span class="course-rating">★ 4.9 <small>(37)</small></span></div></div>
+          </article>
+        </div>
+        <p class="filter-status" id="filter-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section class="how-section section-wrap" id="how-it-works">
+      <div class="container how-grid">
+        <div class="how-intro reveal">
+          <span class="eyebrow">NO GATEKEEPING. JUST GOOD ENERGY.</span>
+          <h2>Good things happen when we <span class="gradient-text">share what we know.</span></h2>
+          <p>From algorithms and APIs to design systems and everyday skills, learn by doing and share what works.</p>
+          <a class="button button-secondary" href="#join">Find your kind of people <span aria-hidden="true">↗</span></a>
+          <div class="how-decoration" aria-hidden="true"><span>learn</span><i>✳</i><span>share</span><i>✳</i><span>grow</span></div>
+        </div>
+        <div class="steps-list">
+          <article class="step-card reveal"><span class="step-number">01</span><span class="step-icon step-icon-purple" aria-hidden="true">⌕</span><div><h3>Find your next thing</h3><p>Search by topic, level, or tech stack to find a class that fits your goals.</p></div><span class="step-arrow" aria-hidden="true">↗</span></article>
+          <article class="step-card reveal"><span class="step-number">02</span><span class="step-icon step-icon-pink" aria-hidden="true">♡</span><div><h3>Learn at your own pace</h3><p>Join a friendly session to test ideas, ask questions, and build confidence.</p></div><span class="step-arrow" aria-hidden="true">↗</span></article>
+          <article class="step-card reveal"><span class="step-number">03</span><span class="step-icon step-icon-blue" aria-hidden="true">✳</span><div><h3>Pass the good stuff on</h3><p>Share a project, process, or skill—your experience can help someone get started.</p></div><span class="step-arrow" aria-hidden="true">↗</span></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="community-banner section-wrap">
+      <div class="container community-inner reveal">
+        <div class="community-copy"><span class="eyebrow">YOUR NEXT CHAPTER IS AROUND THE CORNER</span><h2>Turns out, you don't have to figure it out <span class="gradient-text">alone.</span></h2><p>Turn a new concept into a small project, get feedback, and keep iterating with your community.</p><a class="button button-primary" href="#join">Find your people <span aria-hidden="true">↗</span></a></div>
+        <div class="community-art" aria-hidden="true"><span class="community-orbit orbit-a"></span><span class="community-orbit orbit-b"></span><span class="community-sun">✳</span><span class="community-note note-a">curiosity<br>looks good<br>on you.</span><span class="community-note note-b">better<br>together ♡</span><span class="community-star star-a">✦</span><span class="community-star star-b">✳</span></div>
+      </div>
+    </section>
+
+    <section class="section-wrap pricing-section" id="pricing">
+      <div class="container">
+        <div class="section-heading pricing-heading reveal"><div><span class="eyebrow">GROW YOUR WAY</span><h2>Good energy. <span class="gradient-text">No weird fees.</span></h2></div><p>Start for free, then choose the kind of support that works for you. No pressure, ever.</p></div>
+        <div class="pricing-grid">
+          <article class="price-card reveal"><span class="plan-kicker">JUST LOOKING AROUND?</span><h3>Curious</h3><p class="plan-description">A lovely place to start exploring.</p><p class="price"><strong>Free</strong><span>forever</span></p><a class="button button-price-outline" href="#join">Start exploring <span aria-hidden="true">↗</span></a><ul><li><span>✓</span> Explore all skill categories</li><li><span>✓</span> Join community conversations</li><li><span>✓</span> Save skills for later</li></ul></article>
+          <article class="price-card price-card-featured reveal"><span class="popular-label">A COMMUNITY FAVORITE</span><span class="plan-kicker">READY TO GO A LITTLE DEEPER?</span><h3>Growing</h3><p class="plan-description">For learners who love a little momentum.</p><p class="price"><strong>$12</strong><span>/ month</span></p><a class="button button-primary" href="#join">Try it for free <span aria-hidden="true">↗</span></a><ul><li><span>✓</span> Everything in Curious</li><li><span>✓</span> Unlimited group classes</li><li><span>✓</span> Monthly mentor session</li><li><span>✓</span> A little progress, every week</li></ul></article>
+          <article class="price-card reveal"><span class="plan-kicker">READY TO PASS IT ON?</span><h3>Mentor</h3><p class="plan-description">Make room for someone's next big thing.</p><p class="price"><strong>Free</strong><span>to share</span></p><a class="button button-price-outline" href="#join">Share your skills <span aria-hidden="true">↗</span></a><ul><li><span>✓</span> Create your mentor profile</li><li><span>✓</span> Host your own sessions</li><li><span>✓</span> Meet curious people</li></ul></article>
+        </div>
+        <p class="pricing-note">No credit card, no commitment. Just a good place to begin.</p>
+      </div>
+    </section>
+
+    <section class="join-section section-wrap" id="join">
+      <div class="container join-card reveal">
+        <span class="join-star join-star-one" aria-hidden="true">✳</span><span class="join-star join-star-two" aria-hidden="true">✦</span>
+        <span class="eyebrow">YOUR PEOPLE ARE OUT THERE</span>
+        <h2>Come curious.<br><span class="gradient-text">Leave a little brighter.</span></h2>
+        <p>Learn a technique, build a project, and share what you know.</p>
+        <div class="join-actions"><a class="button button-primary" href="#categories">Explore the community <span aria-hidden="true">↗</span></a><a class="text-link" href="#home">Back to the top ↑</a></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-main reveal">
+      <div class="footer-brand"><a class="brand" href="#home"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M8 11.5 16 7l8 4.5-8 4.6-8-4.6Z" fill="currentColor"/><path d="m8 16 8 4.6 8-4.6M8 20.5l8 4.6 8-4.6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>skill<span class="brand-accent">swap</span></span></a><p>A little more curious.<br>A lot more connected.</p></div>
+      <div class="footer-links"><div><strong>EXPLORE</strong><a href="#categories">Skill categories</a><a href="#featured">Featured classes</a><a href="#pricing">Membership</a></div><div><strong>THE COMMUNITY</strong><a href="#how-it-works">How it works</a><a href="#join">Become a mentor</a><a href="#join">Get in touch</a></div></div>
+      <a class="back-top" href="#home" aria-label="Back to top">↑</a>
+    </div>
+    <div class="container footer-bottom reveal"><span>© <span id="current-year"></span> SkillSwap. Made for the curious.</span><span>Made with a little extra <i aria-hidden="true">♡</i></span></div>
+  </footer>
+</body>
+</html>
