@@ -6,8 +6,10 @@
     <meta name="description" content="SkillSwap login page" />
     <meta name="theme-color" content="#6938df" />
     <title>SkillSwap | Login</title>
-    <link rel="stylesheet" href="css/login.css" />
-    <script src="js/login.js" defer></script>
+    <link rel="stylesheet" href="css/login.css?v=2" />
+    <script src="js/config.js" defer></script>
+    <script src="js/api.js?v=3" defer></script>
+    <script src="js/login.js?v=3" defer></script>
   </head>
   <body class="login-page">
     <main class="login-shell" aria-label="SkillSwap login page">
@@ -28,20 +30,6 @@
         <div class="visual-card">
           <div class="illustration-frame">
             <img src="images/learning-together.jpg" alt="People learning and collaborating together" />
-          </div>
-          <div class="mini-stats" aria-label="SkillSwap community highlights">
-            <div>
-              <strong>12k+</strong>
-              <span>learners</span>
-            </div>
-            <div>
-              <strong>860</strong>
-              <span>skills shared</span>
-            </div>
-            <div>
-              <strong>4.9/5</strong>
-              <span>community rating</span>
-            </div>
           </div>
         </div>
 
@@ -81,7 +69,7 @@
             <div class="field-group">
               <div class="label-row">
                 <label for="password">Password</label>
-                <a href="#" class="text-link" aria-label="Reset your password">Forgot password?</a>
+                <span>Password reset is not available yet.</span>
               </div>
               <div class="input-wrap">
                 <span class="input-icon" aria-hidden="true">
@@ -89,7 +77,7 @@
                     <path d="M7 10V8a5 5 0 1 1 10 0v2M6.5 10h11a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </span>
-                <input id="password" name="password" type="password" placeholder="Enter your password" autocomplete="current-password" aria-invalid="false" />
+                <input id="password" name="password" type="password" placeholder="Enter your password" autocomplete="current-password" maxlength="72" aria-invalid="false" />
                 <button class="toggle-password" type="button" aria-label="Show password">Show</button>
               </div>
               <p class="field-error" id="passwordError" aria-live="polite"></p>
@@ -107,24 +95,9 @@
             <p class="form-success" id="formSuccess" aria-live="polite"></p>
           </form>
 
-          <div class="divider" aria-label="Other ways to sign in">
-            <span>or continue with</span>
-          </div>
-
-          <div class="socials" aria-label="Social sign in options">
-            <button type="button" class="social-button" aria-label="Continue with Google">
-              <span class="social-icon google" aria-hidden="true">G</span>
-              Google
-            </button>
-            <button type="button" class="social-button" aria-label="Continue with GitHub">
-              <span class="social-icon github" aria-hidden="true">◌</span>
-              GitHub
-            </button>
-          </div>
-
           <p class="register-copy">
             New to SkillSwap?
-            <a href="#" class="text-link register-link">Create an account</a>
+            <a href="register.html" class="text-link register-link">Create an account</a>
           </p>
         </div>
       </section>

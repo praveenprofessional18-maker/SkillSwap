@@ -10,8 +10,9 @@
   <title>SkillSwap | Create Account</title>
 
   <link rel="stylesheet" href="css/register.css?v=2">
-  <script src="js/api.js?v=2" defer></script>
-  <script src="js/register.js?v=2" defer></script>
+  <script src="js/config.js" defer></script>
+  <script src="js/api.js?v=3" defer></script>
+  <script src="js/register.js?v=3" defer></script>
 </head>
 
 <body class="register-page">
@@ -79,6 +80,15 @@
           </div>
 
           <div class="field-group">
+            <label for="username">Username</label>
+            <div class="input-wrap">
+              <input type="text" id="username" name="username" placeholder="e.g. curious_learner"
+                autocomplete="username" minlength="3" maxlength="40" required>
+            </div>
+            <p class="field-error" id="usernameError" aria-live="polite"></p>
+          </div>
+
+          <div class="field-group">
             <label for="email">Email address</label>
             <div class="input-wrap">
               <input
@@ -140,29 +150,7 @@
             <p class="field-error" id="languageError" aria-live="polite"></p>
           </div>
 
-          <div class="field-group">
-            <label for="teachSkills">Skills I can teach</label>
-            <div class="input-wrap">
-              <input
-                type="text"
-                id="teachSkills"
-                name="teachSkills"
-                placeholder="e.g. Python, Web Design">
-            </div>
-          </div>
-
-          <div class="field-group">
-            <label for="learnSkills">Skills I want to learn</label>
-            <div class="input-wrap">
-              <input
-                type="text"
-                id="learnSkills"
-                name="learnSkills"
-                placeholder="e.g. JavaScript, UI Design">
-            </div>
-          </div>
-
-          <p class="form-note">Your account currently saves your name, email, and password. Language and skill preferences are not saved yet.</p>
+          <p class="form-note">Add teaching and learning skills after creating your account.</p>
 
           <div class="terms-row">
             <label class="checkbox-wrap">
