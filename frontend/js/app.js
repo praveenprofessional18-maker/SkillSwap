@@ -44,7 +44,7 @@ if (menuToggle && navigation) {
   });
 
   window.addEventListener("resize", () => {
-    if (window.matchMedia("(min-width: 681px)").matches) closeNavigation();
+    if (window.matchMedia("(min-width: 761px)").matches) closeNavigation();
   });
 }
 
