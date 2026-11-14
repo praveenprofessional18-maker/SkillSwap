@@ -1,52 +1,48 @@
-# SkillSwap – Frontend / Backend split
+# SkillSwap setup (Windows PowerShell)
 
-## Project structure
+For the full feature and API reference, see [README.md](./README.md).
 
-- `frontend/` – existing HTML, CSS, JavaScript and images (preserved)
-- `backend/` – FastAPI REST API and SQLite database
-- `frontend/js/api.js` – browser API helper for connecting to FastAPI
+## Install
 
-## Run backend (Windows PowerShell)
+From the repository root, use Python 3.12:
 
 ```powershell
-cd backend
-py -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-$env:JWT_SECRET = "replace-this-with-a-long-random-secret"
-$env:FRONTEND_ORIGIN = "http://localhost:5500"
-uvicorn app.main:app --reload
+py -3.12 -m venv backend\.venv
+backend\.venv\Scripts\python.exe -m pip install -r backend\requirements.txt
+Copy-Item .env.example .env
 ```
 
-Backend: http://127.0.0.1:8000  
-Swagger: http://127.0.0.1:8000/docs
+Set a private `JWT_SECRET` of at least 32 characters in `.env`. Keep this file out of source control.
 
-## Run frontend
+## Start the backend
 
-Open a second PowerShell window:
+In the first PowerShell window:
 
 ```powershell
-cd frontend
+Set-Location backend
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --env-file ..\.env
+```
+
+The API is at <http://127.0.0.1:8000>, health check at <http://127.0.0.1:8000/api/health>, and API documentation at <http://127.0.0.1:8000/docs>.
+
+## Start the frontend
+
+In a second PowerShell window:
+
+```powershell
+Set-Location frontend
 py -m http.server 5500
 ```
 
-Frontend: http://localhost:5500
+Open <http://localhost:5500>. Registration is at `register.html`; after login, the new authenticated dashboard at `dashboard.html` is the landing page.
 
-Add this script before `</body>` in `frontend/index.html` if you want pages to call the API:
+## Run tests
 
-```html
-<script src="js/api.js"></script>
+From the repository root:
+
+```powershell
+Set-Location backend
+.\.venv\Scripts\python.exe -m pytest -q
 ```
 
-Example:
-
-```javascript
-const posts = await window.SkillSwapAPI.posts();
-console.log(posts);
-```
-
-## Important current scope
-
-The uploaded frontend is currently a static landing page with category filters and sample course cards. It does not yet contain registration, login, dashboard, post creation, or exchange forms. The API helper is provided, but the UI must be extended to expose those features.
-
-The backend is a development starter, not production-ready. Before public deployment, add database migrations, stricter upload content inspection, rate limiting, secure secret management, HTTPS, automated tests, and a fully specified mutual-consent exchange workflow. The repeat-once rule also needs a dedicated repeat endpoint and persistent original-exchange linkage before production.
+Tests use a temporary SQLite database and do not modify the local development database.

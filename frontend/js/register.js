@@ -297,11 +297,12 @@ form.addEventListener("submit", async (event) => {
         });
 
         successMessage.textContent =
-            "Your account was created. You can now sign in with your email and password.";
+            "Your account was created. Redirecting you to sign in...";
         password.value = "";
         confirmPassword.value = "";
         clearError(password, passwordError);
         clearError(confirmPassword, confirmPasswordError);
+        window.setTimeout(() => window.location.replace("login.html"), 900);
     } catch (error) {
         successMessage.classList.add("is-error");
         if (error.message.toLowerCase().includes("already registered")) {

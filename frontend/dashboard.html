@@ -1,22 +1,165 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dashboard | SkillSwap</title><link rel="stylesheet" href="css/app.css">
-  <script defer src="js/config.js"></script><script defer src="js/api.js"></script>
-  <script defer src="js/ui.js"></script><script defer src="js/auth.js"></script>
-  <script defer src="js/layout.js"></script><script defer src="js/pages.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f6ff">
+  <link rel="icon" href="data:,">
+  <title>Dashboard · SkillSwap</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/dashboard-integration.css">
+  <script defer src="js/config.js"></script>
+  <script defer src="js/api.js"></script>
+  <script defer src="js/auth.js"></script>
+  <script defer src="js/dashboard.js"></script>
 </head>
-<body class="app-page" data-protected="true" data-page="dashboard">
-  <div id="app-header"></div><main class="app-main">
-    <h1 id="welcome">Your dashboard</h1><p class="page-intro">Your learning and teaching activity at a glance.</p>
-    <section class="page-grid" aria-label="Your activity">
-      <article class="content-card"><h2>Community skills</h2><p id="skills-count" class="metric">—</p></article>
-      <article class="content-card"><h2>Community posts</h2><p id="posts-count" class="metric">—</p></article>
-      <article class="content-card"><h2>Active exchanges</h2><p id="exchanges-count" class="metric">—</p></article>
-      <article class="content-card"><h2>Unread notifications</h2><p id="unread-count" class="metric">—</p></article>
-    </section>
-    <h2 class="section-title">Recent community posts</h2><section id="recent-posts" class="page-grid"><p class="loading-state">Loading posts…</p></section>
-  </main>
+<body data-protected="true">
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="dashboard.html"><span class="brand-mark">S</span><span class="brand-name">SkillSwap</span></a>
+      <div class="nav-caption">WORKSPACE</div>
+      <nav class="primary-nav" aria-label="Main navigation">
+        <button class="nav-link active" data-view="dashboard"><span class="nav-icon">⌂</span>Dashboard</button>
+        <button class="nav-link" data-view="courses"><span class="nav-icon">▤</span>Skills &amp; Courses</button>
+        <button class="nav-link" data-view="exchanges"><span class="nav-icon">⇄</span>Exchange Requests <span class="nav-count" id="exchange-count" hidden>0</span></button>
+        <button class="nav-link" data-view="messages"><span class="nav-icon">◌</span>Messages</button>
+        <button class="nav-link" data-view="notifications"><span class="nav-icon">♧</span>Notifications <span class="nav-count" id="notification-count" hidden>0</span></button>
+      </nav>
+      <div class="nav-caption nav-caption-lower">PERSONAL</div>
+      <nav class="primary-nav" aria-label="Personal navigation">
+        <button class="nav-link" data-view="profile"><span class="nav-icon">◎</span>My Profile</button>
+        <button class="nav-link" data-view="settings"><span class="nav-icon">⚙</span>Settings</button>
+        <button class="nav-link" data-view="help"><span class="nav-icon">?</span>Help &amp; Support</button>
+        <a class="nav-link" id="admin-link" href="admin.html" hidden><span class="nav-icon">◇</span>Admin</a>
+      </nav>
+      <div class="sidebar-promo">
+        <span class="promo-symbol">✦</span>
+        <h3>Grow Together!</h3>
+        <p>Exchange skills, learn new skills.</p>
+        <button class="button button-promo" data-action="browse">Start Exchange <span>→</span></button>
+      </div>
+      <button class="logout-button" id="logout-button"><span class="nav-icon">↪</span>Log out</button>
+    </aside>
+
+    <main class="main-content">
+      <header class="mobile-header">
+        <a class="brand" href="dashboard.html"><span class="brand-mark">S</span> SkillSwap</a>
+        <button class="icon-button mobile-menu" id="menu-button" aria-label="Open menu">☰</button>
+      </header>
+      <div class="topbar">
+        <div class="breadcrumb"><span>Workspace</span><b>/</b><strong id="view-title">Dashboard</strong></div>
+        <div class="top-actions">
+          <button class="icon-button tablet-menu" id="sidebar-collapse" aria-label="Collapse sidebar" title="Collapse sidebar">☰</button>
+          <label class="top-search"><span>⌕</span><input id="global-search" type="search" placeholder="Search courses, skills, people..." aria-label="Search courses, skills, or people"><kbd>⌘ K</kbd></label>
+          <button class="icon-button notification-button" data-view="notifications" aria-label="Notifications">♧<i id="top-unread-dot" hidden></i></button>
+          <button class="avatar avatar-small" id="top-avatar" data-view="profile" aria-label="Open profile">S</button>
+        </div>
+      </div>
+      <div class="page-content">
+        <div class="flash-message" id="flash-message" role="status" hidden></div>
+        <section class="view-panel active" id="view-dashboard">
+          <div class="welcome-row">
+            <div><span class="eyebrow">YOUR LEARNING SPACE</span><h1>Hello, <span id="welcome-name">there</span> <span class="wave">✦</span></h1><p>Welcome back to SkillSwap! Ready to make today count?</p></div>
+            <button class="button button-primary" data-action="publish">＋ Publish a listing</button>
+          </div>
+          <section class="hero-banner">
+            <div class="hero-copy"><span class="hero-kicker">A LITTLE PROGRESS GOES A LONG WAY</span><h2>Keep your curiosity<br>in motion.</h2><p>Learn a new skill, share what you know, and make meaningful connections.</p><button class="button button-white" data-action="browse">Explore courses <span>→</span></button></div>
+            <div class="hero-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="hero-star">✳</div><div class="hero-card hero-card-one">✦ <span>learn</span></div><div class="hero-card hero-card-two">↗ <span>grow</span></div></div>
+          </section>
+          <div class="section-heading"><div><span class="eyebrow">YOUR JOURNEY</span><h2>My Skills &amp; Courses</h2></div><button class="text-button" data-view="courses">Browse listings <span>→</span></button></div>
+          <div class="course-grid" id="dashboard-courses"><div class="loading-card">Loading your learning...</div></div>
+          <div class="two-column-section">
+            <section class="panel-card assignment-panel">
+              <div class="section-heading compact"><div><span class="eyebrow">STAY ON TRACK</span><h2>Upcoming schedule</h2></div><span class="soft-badge">Upcoming</span></div>
+              <div id="assignments-list" class="stack-list"><p class="empty-note">No assignments due. Enjoy the breathing room!</p></div>
+            </section>
+            <section class="panel-card stat-panel">
+              <div class="section-heading compact"><div><span class="eyebrow">YOUR IMPACT</span><h2>At a glance</h2></div><span class="stat-spark">✳</span></div>
+              <div class="mini-stats" id="mini-stats"></div>
+              <p class="stat-footnote">Every exchange starts with a conversation.</p>
+            </section>
+          </div>
+          <section class="resources-section">
+            <div class="section-heading"><div><span class="eyebrow">FROM YOUR COMMUNITY</span><h2>Recent activity</h2></div><span class="resource-caption">Real posts from SkillSwap members.</span></div>
+            <div class="resource-grid" id="resource-grid"></div>
+          </section>
+        </section>
+
+        <section class="view-panel" id="view-courses">
+          <div class="view-intro"><span class="eyebrow">KEEP GROWING</span><h1>Skills &amp; Courses</h1><p>Explore member listings or publish a skill or course you are authorized to describe. Only listing details are shared.</p></div>
+          <div class="course-toolbar"><label class="search-field"><span>⌕</span><input id="course-search" type="search" placeholder="Search by course, skill, or instructor"></label><select id="category-filter" aria-label="Filter by category"><option value="">All categories</option></select><button class="button button-primary" data-action="publish">＋ Publish a listing</button></div>
+          <div class="course-grid browse-grid" id="browse-courses"></div>
+        </section>
+
+        <section class="view-panel" id="view-exchanges">
+          <div class="view-intro"><span class="eyebrow">LEARN TOGETHER</span><h1>Exchange requests</h1><p>Review incoming offers and keep up with your exchange conversations.</p></div>
+          <div class="filter-row"><button class="filter-chip selected" data-filter="all">All</button><button class="filter-chip" data-filter="pending">Pending</button><button class="filter-chip" data-filter="active">Active</button><button class="filter-chip" data-filter="history">History</button></div>
+          <div class="exchange-list" id="exchange-list"></div>
+        </section>
+
+        <section class="view-panel" id="view-messages">
+          <div class="view-intro"><span class="eyebrow">KEEP IN TOUCH</span><h1>Messages</h1><p>Talk through course details and arrange your exchange. Never share course files or account access.</p></div>
+          <div class="messages-layout"><aside class="conversation-list" id="conversation-list"><p class="empty-note">Your exchange conversations will appear here.</p></aside><section class="conversation-panel"><div class="conversation-head" id="conversation-head">Select an exchange to start messaging</div><div class="message-feed" id="message-feed"><div class="message-empty">Thoughtful exchanges start with a hello.</div></div><form class="message-composer" id="message-form"><input id="message-input" maxlength="2000" placeholder="Write a message..." disabled aria-label="Message"><button class="button button-primary" type="submit" disabled id="message-send">Send</button></form></section></div>
+        </section>
+
+        <section class="view-panel" id="view-notifications">
+          <div class="view-intro"><span class="eyebrow">DON’T MISS A THING</span><h1>Notifications</h1><p>Updates about your exchanges and learning schedule.</p></div>
+          <div class="notification-list" id="notification-list"></div>
+        </section>
+
+        <section class="view-panel" id="view-profile">
+          <div class="view-intro"><span class="eyebrow">A LITTLE ABOUT YOU</span><h1>My Profile</h1><p>Your profile helps other members get to know who they are learning with.</p></div>
+          <form class="profile-form panel-card" id="profile-form"><div class="profile-avatar-large" id="profile-avatar-large">S</div><label for="profile-name">Display name</label><input id="profile-name" name="full_name" required minlength="2" maxlength="100"><label for="profile-email">Email address</label><input id="profile-email" name="email" type="email" readonly><label for="profile-avatar">Profile image URL <span>(optional)</span></label><input id="profile-avatar" name="profile_image" type="url" maxlength="500" placeholder="https://..."><label for="profile-bio">About you</label><textarea id="profile-bio" name="bio" maxlength="2000" rows="4"></textarea><label for="profile-location">Location</label><input id="profile-location" name="location" maxlength="120"><button class="button button-primary" type="submit">Save profile</button></form>
+          <div class="profile-overview">
+            <section class="panel-card"><div class="section-heading compact"><div><span class="eyebrow">WHAT YOU SHARE</span><h2>Your listings</h2></div></div><div id="profile-listings" class="stack-list"></div></section>
+            <section class="panel-card"><div class="section-heading compact"><div><span class="eyebrow">YOUR JOURNEY</span><h2>Exchange history</h2></div></div><div id="profile-exchanges" class="stack-list"></div></section>
+          </div>
+        </section>
+
+        <section class="view-panel" id="view-settings">
+          <div class="view-intro"><span class="eyebrow">YOUR PREFERENCES</span><h1>Settings</h1><p>Manage your account and keep your exchanges safe.</p></div>
+          <div class="settings-card panel-card"><div class="settings-row"><div><strong>Account security</strong><p>Your password is stored as a one-way hash. Access tokens expire after the configured session period and can be revoked at logout.</p></div><span class="settings-icon">⌑</span></div><div class="settings-row"><div><strong>Safe exchanges</strong><p>Exchange course details only. Never share videos, files, credentials, or account access.</p></div><span class="settings-icon">◇</span></div><div class="settings-row"><div><strong>Exchange fee</strong><p>₹49 per user is informational only. This app does not collect or process payments.</p></div><span class="settings-icon">₹</span></div></div>
+        </section>
+
+        <section class="view-panel" id="view-help">
+          <div class="view-intro"><span class="eyebrow">HERE TO HELP</span><h1>Help &amp; Support</h1><p>Quick answers to help you make the most of a safe, thoughtful exchange.</p></div>
+          <div class="settings-card panel-card">
+            <div class="settings-row"><div><strong>How do I start an exchange?</strong><p>Publish a course you own, browse another member’s listing, choose an offer and duration, then send a request. The course owner must approve it.</p></div><span class="settings-icon">⇄</span></div>
+            <div class="settings-row"><div><strong>What gets exchanged?</strong><p>Only course details. Never share course videos, presentations, downloads, passwords, or account access.</p></div><span class="settings-icon">◇</span></div>
+            <div class="settings-row"><div><strong>Is a payment processed here?</strong><p>No. ₹49 per user is informational only; SkillSwap does not collect or process payments.</p></div><span class="settings-icon">₹</span></div>
+            <div class="settings-row"><div><strong>How do I arrange a session?</strong><p>Once a request is accepted, open Exchange Requests and use Schedule to add a meeting to both members’ calendars.</p></div><span class="settings-icon">⌑</span></div>
+          </div>
+        </section>
+      </div>
+      <footer class="app-footer">Made for curious minds <span>✦</span> Exchange knowledge, not course content.</footer>
+    </main>
+
+    <aside class="right-panel">
+      <section class="profile-summary panel-card">
+        <div class="right-heading"><span class="eyebrow">YOUR PROFILE</span><button class="more-button" data-view="profile" aria-label="Edit profile">···</button></div>
+        <div class="profile-identity"><div class="profile-avatar" id="side-avatar">S</div><div><h3 id="side-name">SkillSwap Member</h3><p id="side-email">Loading profile...</p></div></div>
+        <button class="button button-outline profile-button" data-view="profile">View profile <span>→</span></button>
+      </section>
+      <section class="calendar-card panel-card">
+        <div class="right-heading"><div><span class="eyebrow">YOUR PLANNER</span><h2>Calendar</h2></div><div class="calendar-arrows"><button id="calendar-prev" aria-label="Previous month">‹</button><button id="calendar-next" aria-label="Next month">›</button></div></div>
+        <div class="calendar-month" id="calendar-month"></div>
+        <div class="calendar-grid" id="calendar-grid"></div>
+      </section>
+      <section class="schedule-card panel-card">
+        <div class="right-heading"><div><span class="eyebrow">MAKE TIME TO LEARN</span><h2>My Schedule</h2></div><button class="more-button" data-view="exchanges" aria-label="View exchanges">···</button></div>
+        <div class="schedule-list" id="schedule-list"></div>
+      </section>
+      <section class="reminders-card panel-card">
+        <div class="right-heading"><div><span class="eyebrow">A GENTLE NUDGE</span><h2>Reminders</h2></div><span class="reminder-spark">✳</span></div>
+        <div id="reminders-list"><p class="empty-note">You’re all caught up.</p></div>
+      </section>
+      <div class="safe-exchange-note"><span>◇</span><p><strong>Keep it safe</strong><br>SkillSwap shares course details only—never course content or account credentials.</p></div>
+    </aside>
+  </div>
+  <div class="mobile-overlay" id="mobile-overlay"></div>
+  <dialog class="app-dialog" id="app-dialog"><div class="dialog-content" id="dialog-content"></div></dialog>
 </body>
 </html>

@@ -204,6 +204,32 @@ class Notification(Base):
     )
 
 
+class RevokedToken(Base):
+    __tablename__ = "revoked_tokens"
+    token_hash = Column(String(64), primary_key=True)
+    expires_at = Column(UTCDateTime(), nullable=False, index=True)
+
+
+class Message(Base):
+    __tablename__ = "messages"
+    id = Column(Integer, primary_key=True)
+    exchange_id = Column(ForeignKey("skill_exchanges.id", ondelete="CASCADE"), nullable=False, index=True)
+    sender_id = Column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    body = Column(String(2000), nullable=False)
+    read_at = Column(UTCDateTime())
+    created_at = Column(UTCDateTime(), nullable=False, server_default=func.now(), index=True)
+
+
+class ScheduleEvent(Base):
+    __tablename__ = "schedule_events"
+    id = Column(Integer, primary_key=True)
+    exchange_id = Column(ForeignKey("skill_exchanges.id", ondelete="CASCADE"), nullable=False, index=True)
+    creator_id = Column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    title = Column(String(120), nullable=False)
+    starts_at = Column(UTCDateTime(), nullable=False, index=True)
+    created_at = Column(UTCDateTime(), nullable=False, server_default=func.now())
+
+
 class Report(Base):
     __tablename__ = "reports"
     id = Column(Integer, primary_key=True)

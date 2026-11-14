@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta, timezone
+
+
 def make_skill(client, headers, name, category_id):
     response = client.post("/api/skills", headers=headers, json={
         "name": name, "category_id": category_id, "description": f"Teaching {name}",
@@ -157,3 +160,65 @@ def test_upload_rejects_spoofed_content_and_non_owner_edits(client, create_accou
         files={"file": ("image.gif", b"GIF89a", "image/gif")},
     )
     assert wrong_extension.status_code == 400
+
+
+def test_logout_revokes_the_access_token(client, create_account):
+    user, headers = create_account("logout")
+    assert client.get("/api/auth/me", headers=headers).status_code == 200
+    response = client.post("/api/auth/logout", headers=headers)
+    assert response.status_code == 204
+    assert client.get("/api/auth/me", headers=headers).status_code == 401
+    login = client.post("/api/auth/login", json={
+        "email": user["email"], "password": "secure-password-123",
+    })
+    assert login.status_code == 200
+    assert login.json()["access_token"] != headers["Authorization"].split(" ", 1)[1]
+    new_headers = {"Authorization": f"Bearer {login.json()['access_token']}"}
+    assert client.get("/api/auth/me", headers=new_headers).status_code == 200
+
+
+def test_exchange_messages_and_schedule_are_private(client, create_account):
+    alice, alice_headers = create_account("message_alice")
+    bob, bob_headers = create_account("message_bob")
+    _, stranger_headers = create_account("message_stranger")
+    categories = client.get("/api/skills/categories").json()["items"]
+    programming = next(item for item in categories if item["name"] == "Programming")
+    design = next(item for item in categories if item["name"] == "UI/UX Design")
+    alice_skill = make_skill(client, alice_headers, "Python tutoring", programming["id"])
+    bob_skill = make_skill(client, bob_headers, "Interface design", design["id"])
+    request = client.post("/api/exchanges/requests", headers=alice_headers, json={
+        "receiver_id": bob["id"],
+        "offered_skill_id": alice_skill["id"],
+        "requested_skill_id": bob_skill["id"],
+        "duration_days": 10,
+    })
+    assert request.status_code == 201
+    accepted = client.post(
+        f"/api/exchanges/requests/{request.json()['id']}/accept",
+        headers=bob_headers,
+    )
+    assert accepted.status_code == 200
+    exchange_id = accepted.json()["id"]
+
+    sent = client.post("/api/messages", headers=alice_headers, json={
+        "exchange_id": exchange_id, "body": "Hello, let's arrange a session.",
+    })
+    assert sent.status_code == 201
+    assert client.get("/api/messages/unread-count", headers=bob_headers).json()["unread_count"] == 1
+    thread = client.get(f"/api/messages?exchange_id={exchange_id}", headers=bob_headers)
+    assert thread.status_code == 200
+    assert thread.json()["items"][0]["body"] == "Hello, let's arrange a session."
+    assert thread.json()["items"][0]["sender_id"] == alice["id"]
+    assert client.get("/api/messages/unread-count", headers=bob_headers).json()["unread_count"] == 0
+    assert client.get(f"/api/messages?exchange_id={exchange_id}", headers=stranger_headers).status_code == 404
+    assert client.post("/api/messages", headers=stranger_headers, json={
+        "exchange_id": exchange_id, "body": "Not a participant",
+    }).status_code == 404
+
+    starts_at = (datetime.now(timezone.utc) + timedelta(days=2)).isoformat()
+    scheduled = client.post("/api/schedule", headers=alice_headers, json={
+        "exchange_id": exchange_id, "title": "Skill sharing session", "starts_at": starts_at,
+    })
+    assert scheduled.status_code == 201, scheduled.text
+    assert client.get("/api/schedule", headers=bob_headers).json()["items"][0]["title"] == "Skill sharing session"
+    assert client.get("/api/schedule", headers=stranger_headers).json()["total"] == 0
