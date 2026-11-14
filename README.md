@@ -1,10 +1,11 @@
 # SkillSwap
 
-SkillSwap is a community skill-sharing application. Members publish skills and posts, discover other learners, and organize no-cost knowledge exchanges with a mutually agreed duration.
+SkillSwap is a community skill-sharing application. Members publish skill and course-detail listings, discover other learners, and organize mutually approved exchanges. The ₹49-per-user fee is informational only; this project does not collect or process payments.
 
 ## Architecture
 
-- `frontend/` contains responsive HTML, CSS, and vanilla JavaScript pages. The frontend calls the API with `fetch` and a JWT bearer token.
+- `frontend/` contains responsive HTML, CSS, and vanilla JavaScript pages. `frontend/dashboard.html` is the authenticated landing page and uses the dashboard design supplied in `dashborag.zip`; it is integrated with the existing SkillSwap API rather than the separate backend bundled in that archive.
+- `frontend/` calls the API with `fetch` and a JWT bearer token. Existing account registration, login, profile, skills, exchange, community, and moderation flows remain on the original API.
 - `backend/app/` contains the FastAPI application, SQLAlchemy models, Pydantic schemas, authorization dependencies, API routes, and exchange/upload/notification services.
 - SQLite is the local default. The models use SQLAlchemy types and ORM queries and can also use PostgreSQL through `DATABASE_URL`.
 - ORM datetimes are normalized to UTC and returned timezone-aware, including when SQLite strips timezone metadata.
@@ -42,11 +43,12 @@ Before the first API startup, set `ADMIN_EMAIL` and `ADMIN_PASSWORD` in the root
 
 ## Features
 
-- Registration and sign-in, expiring JWTs, username uniqueness, profile editing, account activation checks, and admin roles.
+- Registration and sign-in, expiring JWTs, token-revoking logout, username uniqueness, profile editing, account activation checks, and admin roles.
 - Skill categories and CRUD for teaching skills, plus learning goals.
 - Community posts with comments, likes, reports, and image/video uploads.
 - Discovery across users, skills, categories, and posts, with filters and pagination.
 - Skill exchange requests, duration counter-proposals, accept/reject/cancel, active exchanges, completion, history, and notifications.
+- Exchange-participant-only messages with unread tracking, plus shared meeting schedules that are limited to the active exchange period.
 - Admin statistics, user activation controls, report review, and post moderation.
 - Protected frontend pages, logout, accessible forms, responsive shared layout, empty/error states, and safe text rendering.
 
@@ -71,11 +73,13 @@ The repeat limit is exactly two accepted exchanges total (the original plus one 
 
 All list routes use `page` and `page_size` (default 20, maximum 100) and respond with `{items, total, page, page_size}`.
 
-- Auth: `/api/auth/register`, `/api/auth/login`, `/api/auth/me`
+- Auth: `/api/auth/register`, `/api/auth/login`, `/api/auth/logout`, `/api/auth/me`
 - Users and profiles: `/api/users`, `/api/users/{user_id}`, `/api/users/me`, `/api/users/me/profile`
 - Skills: `/api/skills` and `/api/skills/categories`; teaching/learning links under `/api/users/me/`
 - Posts: `/api/posts` with media, likes, comments, and reports
 - Exchanges: `/api/exchanges/requests/*`, `/api/exchanges/active`, `/api/exchanges/history`, `/api/exchanges/{exchange_id}`
+- Messages: `/api/messages`, `/api/messages/unread-count` (messages are scoped to accepted exchanges)
+- Schedule: `GET` and `POST` `/api/schedule` (events are visible only to exchange participants)
 - Notifications: `/api/notifications`, `/api/notifications/unread-count`, read and read-all actions
 - Search: `/api/search`
 - Admin: `/api/admin/dashboard`, `/api/admin/users`, `/api/admin/reports`, and moderation routes
@@ -102,10 +106,10 @@ See [.env.example](./.env.example). Important settings include `JWT_SECRET`, `JW
 
 - The application refuses startup when `JWT_SECRET` is missing or shorter than 32 characters.
 - Protected endpoints resolve the user and active state from the database for every request. Admin access is checked server-side.
-- Passwords use bcrypt; authentication attempts are rate-limited per source IP in process memory.
+- Passwords use bcrypt; authentication attempts are rate-limited per source IP in process memory. Logout revokes the presented access token until its expiry.
 - CORS allows only `FRONTEND_ORIGIN`; API errors use a consistent `detail` and `code` response.
 - Uploads are streamed with a size cap and checked against both filename extension, declared MIME type, and file signature. Responses set `X-Content-Type-Options: nosniff`.
-- Frontend text from users is added with `textContent` and DOM nodes rather than interpolated HTML.
+- The dashboard escapes user-provided values before inserting them into HTML templates; other frontend views use `textContent` and DOM nodes.
 
 ## Design decisions
 
@@ -113,8 +117,8 @@ See [.env.example](./.env.example). Important settings include `JWT_SECRET`, `JW
 - The authentication rate limiter is a small in-memory limiter rather than an external service. Limits are per running process and reset on restart.
 - Near-end exchange reminders are generated on reads of active exchanges instead of using a worker service.
 - Skills are owned by one member, and exchange records snapshot skill IDs and the canonical combination so history remains attributable.
-- The browser stores bearer tokens in local storage when “Remember me” is selected, or session storage otherwise. Logout clears both.
+- The browser stores bearer tokens in local storage when “Remember me” is selected, or session storage otherwise. Logout calls the API to revoke the token and then clears both stores.
 
 ## Known limitations
 
-This is a local-development build, not a production deployment recipe. The in-memory auth limiter is not shared across multiple workers; file storage is local; uploads are signature-checked but are not malware-scanned or re-encoded; there is no email verification, password reset, or automated background worker. Use HTTPS, managed secrets, backups, durable shared storage, migrations, and operational monitoring before public deployment.
+This is a local-development build, not a production deployment recipe. Skill/course-detail listings reuse the existing `skills` model; external course ownership or purchase is not verified. Users should list only details they are authorized to share. The ₹49 exchange fee is not charged, and course videos, presentations, and account credentials are never distributed. The in-memory auth limiter is not shared across multiple workers; file storage is local; uploads are signature-checked but are not malware-scanned or re-encoded; there is no email verification, password reset, or automated background worker. Use HTTPS, managed secrets, backups, durable shared storage, migrations, and operational monitoring before public deployment.

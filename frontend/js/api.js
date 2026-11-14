@@ -12,11 +12,13 @@ async function apiRequest(path, options = {}) {
   }
   if (token) headers.Authorization = `Bearer ${token}`;
   const response = await fetch(`${API_BASE_URL}${path}`, { ...options, headers });
+  if (response.status === 204) return null;
   const contentType = response.headers.get("content-type") || "";
   const payload = contentType.includes("application/json") ? await response.json() : null;
   if (!response.ok) {
     const message = payload && payload.detail;
-    throw new Error(typeof message === "string" ? message : "API request failed");
+    const text = typeof message === "string" ? message : message && message.detail;
+    throw new Error(text || "API request failed");
   }
   return payload;
 }
@@ -63,12 +65,19 @@ const SkillSwapAPI = {
   }),
   comments: (id) => apiRequest(`/api/posts/${id}/comments`),
   exchanges: (path, options = {}) => apiRequest(`/api/exchanges${path}`, options),
-  notifications: () => apiRequest("/api/notifications"),
+  notifications: (params = {}) => apiRequest(`/api/notifications?${queryString(params)}`),
   search: (params = {}) => apiRequest(`/api/search?${queryString(params)}`),
-  logout: () => {
+  logout: async () => {
+    let logoutError;
+    try {
+      await apiRequest("/api/auth/logout", { method: "POST" });
+    } catch (error) {
+      logoutError = error;
+    }
     localStorage.removeItem("skillswap_access_token");
     sessionStorage.removeItem("skillswap_access_token");
-    window.location.href = "index.html";
+    window.location.replace("login.html");
+    if (logoutError) throw logoutError;
   }
 };
 

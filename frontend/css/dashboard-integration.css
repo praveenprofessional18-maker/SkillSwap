@@ -1,0 +1,99 @@
+.app-shell [hidden] {
+  display: none !important;
+}
+
+.course-toolbar select {
+  min-width: 150px;
+  padding: 0 10px;
+  border: 1px solid #e9e5ef;
+  border-radius: 9px;
+  color: #777286;
+  background: #fff;
+  font-size: 10px;
+}
+
+.skill-description {
+  display: -webkit-box;
+  min-height: 34px;
+  overflow: hidden;
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1.5;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.skill-actions {
+  display: flex;
+  gap: 7px;
+}
+
+.skill-actions .course-action {
+  flex: 1;
+}
+
+.profile-form textarea {
+  width: 100%;
+  min-height: 82px;
+  padding: 9px 10px;
+  outline: 0;
+  border: 1px solid #eae7f0;
+  border-radius: 8px;
+  resize: vertical;
+  font: inherit;
+}
+
+.profile-form textarea:focus {
+  border-color: #b69ef1;
+}
+
+.profile-overview {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px;
+  margin-top: 16px;
+}
+
+.profile-overview .panel-card {
+  padding: 15px;
+}
+
+.resource-body small {
+  color: #a09aaa;
+  font-size: 8px;
+}
+
+.search-result .course-body {
+  min-height: 118px;
+}
+
+.button:disabled,
+.logout-button:disabled {
+  cursor: wait;
+  opacity: .6;
+}
+
+@media (max-width: 520px) {
+  .course-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .course-toolbar select {
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .exchange-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .exchange-actions {
+    flex-wrap: wrap;
+  }
+
+  .profile-overview {
+    grid-template-columns: 1fr;
+  }
+}
