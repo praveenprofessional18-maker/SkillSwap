@@ -1,5 +1,9 @@
 from datetime import datetime, timedelta, timezone
 
+import jwt
+
+from app.security import ALGORITHM, JWT_SECRET
+
 
 def make_skill(client, headers, name, category_id):
     response = client.post("/api/skills", headers=headers, json={
@@ -31,6 +35,20 @@ def test_registration_auth_and_role_protection(client, create_account):
     assert user["id"] > 0
 
 
+def test_local_frontend_origins_are_allowed_for_registration(client):
+    for origin in ("http://localhost:5500", "http://127.0.0.1:5500"):
+        response = client.options(
+            "/api/auth/register",
+            headers={
+                "Origin": origin,
+                "Access-Control-Request-Method": "POST",
+                "Access-Control-Request-Headers": "content-type",
+            },
+        )
+        assert response.status_code == 200
+        assert response.headers["access-control-allow-origin"] == origin
+
+
 def test_deactivated_users_cannot_reuse_tokens_and_weak_password_is_rejected(client, create_account):
     user, headers = create_account("paused")
     admin = client.post("/api/auth/login", json={
@@ -44,6 +62,101 @@ def test_deactivated_users_cannot_reuse_tokens_and_weak_password_is_rejected(cli
         "username": "weakuser", "email": "weak@example.com", "password": "short",
     })
     assert weak.status_code == 422
+
+
+def test_invalid_and_expired_tokens_are_rejected(client, create_account):
+    user, _ = create_account("expired")
+    invalid = client.get("/api/auth/me", headers={"Authorization": "Bearer invalid-token"})
+    assert invalid.status_code == 401
+
+    expired_token = jwt.encode(
+        {"sub": str(user["id"]), "exp": datetime.now(timezone.utc) - timedelta(seconds=1)},
+        JWT_SECRET,
+        algorithm=ALGORITHM,
+    )
+    expired = client.get("/api/auth/me", headers={"Authorization": f"Bearer {expired_token}"})
+    assert expired.status_code == 401
+
+
+def test_learning_catalog_exposes_complete_lessons_without_quiz_answers(client, create_account):
+    paths = client.get("/api/learning-paths")
+    assert paths.status_code == 200
+    assert paths.json()["total"] == 7
+    assert {item["title"] for item in paths.json()["items"]} == {
+        "Web Development", "Python Programming", "Java Programming", "Cybersecurity",
+        "Cloud Computing", "UI/UX Design", "Data Science",
+    }
+
+    path = client.get("/api/learning-paths/web-development").json()
+    assert path["module_count"] == 2
+    assert path["lesson_count"] == 3
+    assert path["completed"] is False
+    lesson_id = path["modules"][0]["lessons"][0]["id"]
+    lesson = client.get(f"/api/learning-lessons/{lesson_id}")
+    assert lesson.status_code == 200
+    lesson_data = lesson.json()
+    assert lesson_data["objectives"]
+    assert lesson_data["tutorial_steps"]
+    assert lesson_data["code_examples"]
+    assert len(lesson_data["quiz"]) == 2
+    assert all("correct_option" not in question for question in lesson_data["quiz"])
+    assert client.put(
+        f"/api/learning-lessons/{lesson_id}/exercise",
+        json={"response": "A considered answer"},
+    ).status_code == 401
+
+
+def test_learning_progress_requires_exercise_and_is_private(client, create_account):
+    learner, learner_headers = create_account("path_learner")
+    _, other_headers = create_account("path_other")
+    path = client.get("/api/learning-paths/web-development").json()
+    lesson_id = path["modules"][0]["lessons"][0]["id"]
+    quiz_url = f"/api/learning-lessons/{lesson_id}/quiz"
+    exercise_url = f"/api/learning-lessons/{lesson_id}/exercise"
+
+    failed = client.post(quiz_url, headers=learner_headers, json={"answers": [1, 0]})
+    assert failed.status_code == 200
+    assert failed.json()["passed"] is False
+    assert failed.json()["completed"] is False
+    blank_exercise = client.put(
+        exercise_url, headers=learner_headers, json={"response": "   "}
+    )
+    assert blank_exercise.status_code == 422
+
+    passed_quiz = client.post(quiz_url, headers=learner_headers, json={"answers": [0, 0]})
+    assert passed_quiz.status_code == 200
+    assert passed_quiz.json()["passed"] is True
+    assert passed_quiz.json()["completed"] is False
+
+    exercise = client.put(
+        exercise_url,
+        headers=learner_headers,
+        json={"response": "I outlined the semantic regions and form label."},
+    )
+    assert exercise.status_code == 200
+    assert exercise.json()["completed"] is True
+
+    own_path = client.get(
+        "/api/learning-paths/web-development", headers=learner_headers
+    ).json()
+    assert own_path["completed_lessons"] == 1
+    own_lesson = client.get(
+        f"/api/learning-lessons/{lesson_id}", headers=learner_headers
+    ).json()
+    assert own_lesson["progress"]["exercise_response"].startswith("I outlined")
+
+    other_path = client.get(
+        "/api/learning-paths/web-development", headers=other_headers
+    ).json()
+    assert other_path["completed_lessons"] == 0
+    other_lesson = client.get(
+        f"/api/learning-lessons/{lesson_id}", headers=other_headers
+    ).json()
+    assert other_lesson["progress"]["completed"] is False
+    assert other_lesson["progress"]["exercise_response"] == ""
+
+    assert learner["id"] > 0
+    assert client.post(quiz_url, headers=learner_headers, json={"answers": [0]}).status_code == 422
 
 
 def test_profile_skills_posts_and_like_toggle(client, create_account):

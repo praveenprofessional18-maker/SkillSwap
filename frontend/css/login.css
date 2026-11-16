@@ -1,20 +1,20 @@
 :root {
-  --page-bg: #07151c;
+  --page-bg: #0b1020;
   --panel-bg: rgba(10, 22, 31, 0.92);
   --panel-soft: rgba(18, 31, 42, 0.9);
   --card-soft: rgba(20, 31, 40, 0.82);
   --card-strong: rgba(17, 25, 34, 0.96);
-  --primary: #7c5cff;
-  --primary-strong: #6946f2;
-  --primary-soft: rgba(124, 92, 255, 0.14);
-  --accent: #73d6b6;
+  --primary: #22c55e;
+  --primary-strong: #16a34a;
+  --primary-soft: rgba(34, 197, 94, 0.14);
+  --accent: #38bdf8;
   --accent-warm: #f2b57f;
   --text: #ebf4ff;
   --muted: #afc2d6;
   --muted-strong: #d9e7f4;
   --line: rgba(255, 255, 255, 0.12);
   --danger: #ff7a7a;
-  --success: #36d399;
+  --success: #22c55e;
   --shadow: rgba(5, 12, 17, 0.42);
   --font: "Segoe UI", Tahoma, sans-serif;
   --heading: "Trebuchet MS", "Segoe UI", sans-serif;
@@ -34,9 +34,9 @@ body {
   font-family: var(--font);
   color: var(--text);
   background:
-    radial-gradient(circle at top left, rgba(124, 92, 255, 0.18), transparent 28%),
-    radial-gradient(circle at bottom right, rgba(115, 214, 182, 0.16), transparent 30%),
-    linear-gradient(135deg, #07151c 0%, #0c1f2a 30%, #0d1621 100%);
+    radial-gradient(circle at top left, rgba(34, 197, 94, 0.12), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(56, 189, 248, 0.12), transparent 30%),
+    linear-gradient(135deg, #0b1020 0%, #0e1729 30%, #111827 100%);
 }
 
 img {
@@ -92,7 +92,7 @@ button {
   overflow: hidden;
   background:
     linear-gradient(180deg, rgba(17, 27, 35, 0.72), rgba(10, 18, 24, 0.93)),
-    linear-gradient(135deg, rgba(124, 92, 255, 0.18), rgba(115, 214, 182, 0.12));
+    linear-gradient(135deg, rgba(34, 197, 94, 0.14), rgba(56, 189, 248, 0.1));
 }
 
 .visual-overlay {
@@ -125,18 +125,20 @@ button {
   place-items: center;
   border-radius: 12px;
   border: 1px solid rgba(211, 202, 255, 0.35);
-  background: linear-gradient(145deg, rgba(164, 125, 255, 0.22), rgba(116, 93, 255, 0.12));
-  color: #ddd1ff;
-  box-shadow: inset 0 1px rgba(255, 255, 255, 0.2), 0 8px 20px rgba(98, 69, 195, 0.2);
+  overflow: hidden;
+  background: #141b2d;
+  color: #bbf7d0;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.2), 0 8px 20px rgba(34, 197, 94, 0.12);
 }
 
-.brand-mark svg {
+.brand-mark img {
+  display: block;
   width: 21px;
   height: 21px;
 }
 
 .brand-accent {
-  color: #d6c4ff;
+  color: #7dd3fc;
 }
 
 .visual-card {
@@ -192,7 +194,7 @@ button {
 }
 
 .eyebrow {
-  color: #d8c4ff;
+  color: #bbf7d0;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -238,7 +240,7 @@ button {
   gap: 8px;
   padding: 7px 12px;
   border-radius: 999px;
-  background: rgba(115, 214, 182, 0.08);
+  background: rgba(56, 189, 248, 0.08);
   color: var(--muted-strong);
   font-size: 0.73rem;
   font-weight: 600;
@@ -258,7 +260,7 @@ button {
 
 .welcome-kicker {
   margin: 0;
-  color: #d9c7ff;
+  color: #bbf7d0;
   font-size: 0.74rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -309,8 +311,8 @@ label {
 }
 
 .input-wrap:focus-within {
-  border-color: rgba(152, 129, 255, 0.9);
-  box-shadow: 0 0 0 4px rgba(124, 92, 255, 0.12);
+  border-color: rgba(56, 189, 248, 0.9);
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.12);
   background: rgba(255, 255, 255, 0.03);
 }
 
@@ -348,7 +350,7 @@ label {
 .toggle-password {
   border: 0;
   background: transparent;
-  color: #d9c7ff;
+  color: #7dd3fc;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -401,17 +403,35 @@ label {
   min-height: 56px;
   border: 0;
   border-radius: 14px;
-  background: linear-gradient(110deg, #7c5cff, #9a74ff 55%, #db90d5);
+  background: linear-gradient(110deg, #22c55e, #16a34a 55%, #38bdf8);
   color: #f8f3ff;
   font-size: 1rem;
   font-weight: 700;
-  box-shadow: 0 18px 30px rgba(123, 97, 255, 0.26);
+  box-shadow: 0 18px 30px rgba(34, 197, 94, 0.2);
   transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.login-button.is-loading::before {
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  content: "";
+  animation: auth-spin .7s linear infinite;
+}
+
+@keyframes auth-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-button.is-loading::before { animation: none; }
 }
 
 .login-button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 20px 36px rgba(123, 97, 255, 0.32);
+  box-shadow: 0 20px 36px rgba(34, 197, 94, 0.27);
   filter: brightness(1.02);
 }
 
@@ -479,8 +499,8 @@ label {
 
 .social-button:hover {
   transform: translateY(-1px);
-  border-color: rgba(124, 92, 255, 0.5);
-  background: rgba(124, 92, 255, 0.06);
+  border-color: rgba(56, 189, 248, 0.5);
+  background: rgba(56, 189, 248, 0.06);
 }
 
 .social-icon {

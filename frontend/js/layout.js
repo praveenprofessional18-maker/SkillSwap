@@ -8,7 +8,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const brand = document.createElement("a");
   brand.className = "app-brand";
   brand.href = "dashboard.html";
-  brand.textContent = "SkillSwap";
+  const mark = document.createElement("img");
+  mark.src = "images/skillswap-mark.svg";
+  mark.alt = "";
+  brand.append(mark, document.createTextNode("SkillSwap 2.0"));
   const nav = document.createElement("nav");
   nav.setAttribute("aria-label", "Main navigation");
   [

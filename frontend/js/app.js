@@ -46,7 +46,7 @@ async function loadLandingData() {
   categories.items.forEach((category, index) => {
     const link = document.createElement("a");
     link.className = `category-card category-${["lavender", "blue", "peach", "mint", "yellow", "pink"][index % 6]}`;
-    link.href = `skills.html?category=${encodeURIComponent(category.name)}`;
+    link.href = `dashboard.html?category=${encodeURIComponent(category.name)}`;
     const icon = document.createElement("span");
     icon.className = "category-icon";
     icon.setAttribute("aria-hidden", "true");

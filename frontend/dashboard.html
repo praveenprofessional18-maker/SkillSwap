@@ -3,27 +3,28 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f7f6ff">
-  <link rel="icon" href="data:,">
-  <title>Dashboard · SkillSwap</title>
+  <meta name="theme-color" content="#0b1020">
+  <link rel="icon" href="images/skillswap-mark.svg" type="image/svg+xml">
+  <title>Dashboard · SkillSwap 2.0</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/dashboard.css">
-  <link rel="stylesheet" href="css/dashboard-integration.css">
+  <link rel="stylesheet" href="css/dashboard.css?v=2">
+  <link rel="stylesheet" href="css/dashboard-integration.css?v=2">
   <script defer src="js/config.js"></script>
-  <script defer src="js/api.js"></script>
-  <script defer src="js/auth.js"></script>
+  <script defer src="js/api.js?v=4"></script>
+  <script defer src="js/auth.js?v=2"></script>
   <script defer src="js/dashboard.js"></script>
 </head>
 <body data-protected="true">
   <div class="app-shell">
     <aside class="sidebar" id="sidebar">
-      <a class="brand" href="dashboard.html"><span class="brand-mark">S</span><span class="brand-name">SkillSwap</span></a>
+      <a class="brand" href="dashboard.html"><span class="brand-mark"><img src="images/skillswap-mark.svg" alt=""></span><span class="brand-name">SkillSwap 2.0</span></a>
       <div class="nav-caption">WORKSPACE</div>
       <nav class="primary-nav" aria-label="Main navigation">
         <button class="nav-link active" data-view="dashboard"><span class="nav-icon">⌂</span>Dashboard</button>
         <button class="nav-link" data-view="courses"><span class="nav-icon">▤</span>Skills &amp; Courses</button>
+        <button class="nav-link" data-view="learning"><span class="nav-icon">⌘</span>Learning Paths</button>
         <button class="nav-link" data-view="exchanges"><span class="nav-icon">⇄</span>Exchange Requests <span class="nav-count" id="exchange-count" hidden>0</span></button>
         <button class="nav-link" data-view="messages"><span class="nav-icon">◌</span>Messages</button>
         <button class="nav-link" data-view="notifications"><span class="nav-icon">♧</span>Notifications <span class="nav-count" id="notification-count" hidden>0</span></button>
@@ -46,7 +47,7 @@
 
     <main class="main-content">
       <header class="mobile-header">
-        <a class="brand" href="dashboard.html"><span class="brand-mark">S</span> SkillSwap</a>
+        <a class="brand" href="dashboard.html"><span class="brand-mark"><img src="images/skillswap-mark.svg" alt=""></span> SkillSwap 2.0</a>
         <button class="icon-button mobile-menu" id="menu-button" aria-label="Open menu">☰</button>
       </header>
       <div class="topbar">
@@ -92,6 +93,13 @@
           <div class="view-intro"><span class="eyebrow">KEEP GROWING</span><h1>Skills &amp; Courses</h1><p>Explore member listings or publish a skill or course you are authorized to describe. Only listing details are shared.</p></div>
           <div class="course-toolbar"><label class="search-field"><span>⌕</span><input id="course-search" type="search" placeholder="Search by course, skill, or instructor"></label><select id="category-filter" aria-label="Filter by category"><option value="">All categories</option></select><button class="button button-primary" data-action="publish">＋ Publish a listing</button></div>
           <div class="course-grid browse-grid" id="browse-courses"></div>
+        </section>
+
+        <section class="view-panel" id="view-learning">
+          <div class="view-intro"><span class="eyebrow">LEARN STEP BY STEP</span><h1>Learning Paths</h1><p>Follow structured lessons, practice with exercises, and check your understanding with short quizzes.</p></div>
+          <div class="learning-path-grid" id="learning-catalog"><div class="loading-card">Loading learning paths...</div></div>
+          <section class="learning-detail panel-card" id="learning-path-detail" hidden></section>
+          <section class="learning-detail panel-card" id="learning-lesson-detail" hidden></section>
         </section>
 
         <section class="view-panel" id="view-exchanges">
