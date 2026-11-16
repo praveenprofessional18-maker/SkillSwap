@@ -8,6 +8,30 @@ const togglePasswordButton = document.querySelector(".toggle-password");
 const emailError = document.getElementById("emailError");
 const passwordError = document.getElementById("passwordError");
 const successMessage = document.getElementById("formSuccess");
+if (new URLSearchParams(window.location.search).get("error") === "session_unavailable") {
+  successMessage.classList.add("is-error");
+  successMessage.textContent = "We could not verify your session. Check your connection and sign in again.";
+}
+
+function getPostLoginDestination() {
+  const requested = new URLSearchParams(window.location.search).get("next");
+  const allowedPages = new Set([
+    "admin.html", "community.html", "dashboard.html", "exchanges.html",
+    "notifications.html", "profile.html", "search.html", "settings.html", "skills.html"
+  ]);
+  if (!requested) return "dashboard.html";
+
+  let destination;
+  try {
+    destination = new URL(requested, window.location.href);
+  } catch {
+    return "dashboard.html";
+  }
+  if (destination.origin !== window.location.origin || !allowedPages.has(destination.pathname.split("/").pop())) {
+    return "dashboard.html";
+  }
+  return `${destination.pathname}${destination.search}${destination.hash}`;
+}
 
 function setError(input, errorField, message) {
   input.setAttribute("aria-invalid", "true");
@@ -115,6 +139,7 @@ form.addEventListener("submit", async (event) => {
 
   const submitButton = form.querySelector('button[type="submit"]');
   submitButton.disabled = true;
+  submitButton.classList.add("is-loading");
   submitButton.textContent = "Signing in...";
 
   try {
@@ -127,7 +152,7 @@ form.addEventListener("submit", async (event) => {
       password: passwordInput.value
     }, rememberMeInput.checked);
 
-    window.location.replace("dashboard.html");
+    window.location.replace(getPostLoginDestination());
   } catch (error) {
     successMessage.classList.add("is-error");
     if (error.message.toLowerCase().includes("invalid email or password")) {
@@ -140,6 +165,7 @@ form.addEventListener("submit", async (event) => {
     }
   } finally {
     submitButton.disabled = false;
+    submitButton.classList.remove("is-loading");
     submitButton.textContent = "Log in";
   }
 });

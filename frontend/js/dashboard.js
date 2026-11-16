@@ -15,6 +15,9 @@
     notifications: [],
     schedule: [],
     conversations: [],
+    learningPaths: [],
+    activeLearningPath: null,
+    activeLearningLesson: null,
     selectedExchange: null,
     exchangeFilter: "all",
     month: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
@@ -27,6 +30,8 @@
   const escapeHtml = (value = "") => String(value).replace(/[&<>"']/g, (char) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
   }[char]));
+  const formatLearningText = (value = "") => escapeHtml(value)
+    .replace(/`([^`]+)`/g, '<code class="learning-inline-code">$1</code>');
   const itemsOf = (result) => Array.isArray(result) ? result : result?.items || [];
   const pageQuery = (params = {}) => new URLSearchParams(
     Object.entries(params).filter(([, value]) => value !== undefined && value !== null && value !== "")
@@ -226,13 +231,16 @@
     const result = await API.categories({ page_size: 100 });
     state.categories = itemsOf(result);
     const select = $("#category-filter");
-    select.value = "";
     state.categories.forEach((category) => {
       const option = document.createElement("option");
       option.value = category.name;
       option.textContent = category.name;
       select.append(option);
     });
+    const requestedCategory = new URLSearchParams(window.location.search).get("category");
+    const matchingCategory = state.categories.find((category) => category.name === requestedCategory);
+    select.value = matchingCategory ? matchingCategory.name : "";
+    return Boolean(matchingCategory);
   }
 
   async function loadCourses(search = "", category = "") {
@@ -245,6 +253,153 @@
     } catch (error) {
       container.innerHTML = `<div class="empty-state"><strong>Listings could not be loaded</strong>${escapeHtml(error.message)}</div>`;
     }
+  }
+
+  function renderLearningPaths() {
+    const container = $("#learning-catalog");
+    container.innerHTML = state.learningPaths.length
+      ? state.learningPaths.map((path) => `<article class="learning-path-card">
+          <div class="learning-path-card-top"><span class="soft-badge">${escapeHtml(path.difficulty)}</span><span>${path.estimated_minutes} min</span></div>
+          <h2>${escapeHtml(path.title)}</h2>
+          <p>${escapeHtml(path.description)}</p>
+          <div class="learning-path-meta"><span>${path.module_count} modules</span><span>${path.lesson_count} lessons</span></div>
+          <div class="learning-progress"><div class="learning-progress-label"><span>Your progress</span><strong>${path.progress_percent}%</strong></div><div class="progress-track"><span style="width:${path.progress_percent}%"></span></div></div>
+          <button class="button button-outline" data-action="open-learning-path" data-slug="${escapeHtml(path.slug)}">${path.completed ? "Review path" : path.completed_lessons ? "Continue path" : "Explore path"} <span>→</span></button>
+        </article>`).join("")
+      : `<div class="empty-state"><strong>No learning paths are available</strong>Please try again later.</div>`;
+  }
+
+  async function loadLearningPaths() {
+    const container = $("#learning-catalog");
+    $("#learning-path-detail").hidden = true;
+    $("#learning-lesson-detail").hidden = true;
+    container.hidden = false;
+    container.innerHTML = `<div class="loading-card">Loading learning paths...</div>`;
+    try {
+      const result = await API.learningPaths({ page_size: 100 });
+      state.learningPaths = itemsOf(result);
+      renderLearningPaths();
+    } catch (error) {
+      container.innerHTML = `<div class="empty-state"><strong>Learning paths could not be loaded</strong>${escapeHtml(error.message)}</div>`;
+    }
+  }
+
+  async function openLearningPath(slug) {
+    const path = await API.learningPath(slug);
+    state.activeLearningPath = path;
+    state.activeLearningLesson = null;
+    $("#learning-catalog").hidden = true;
+    $("#learning-lesson-detail").hidden = true;
+    const detail = $("#learning-path-detail");
+    detail.hidden = false;
+    detail.innerHTML = `<button class="text-button learning-back" data-action="learning-back-catalog">← All learning paths</button>
+      <div class="learning-path-heading"><div><span class="eyebrow">${escapeHtml(path.difficulty)} · ${path.estimated_minutes} MIN</span><h2>${escapeHtml(path.title)}</h2><p>${escapeHtml(path.description)}</p></div><span class="learning-path-completion">${path.completed ? "Path completed" : `${path.progress_percent}% complete`}</span></div>
+      <div class="learning-progress"><div class="progress-track"><span style="width:${path.progress_percent}%"></span></div></div>
+      ${path.modules.map((module) => `<section class="learning-module">
+        <div class="learning-module-heading"><span class="eyebrow">MODULE ${module.position + 1}</span><h3>${escapeHtml(module.title)}</h3><p>${escapeHtml(module.description)}</p></div>
+        <div class="learning-lesson-list">${module.lessons.map((lesson) => `<button class="learning-lesson-link ${lesson.completed ? "completed" : ""}" data-action="open-learning-lesson" data-id="${lesson.id}">
+          <span class="learning-lesson-mark">${lesson.completed ? "✓" : "›"}</span><span><strong>${escapeHtml(lesson.title)}</strong><small>${lesson.completed ? "Completed" : "Lesson"}${lesson.progress?.quiz_score !== null && lesson.progress?.quiz_score !== undefined ? ` · Best quiz score ${lesson.progress.quiz_score}%` : ""}</small></span><span aria-hidden="true">→</span>
+        </button>`).join("")}</div>
+      </section>`).join("")}`;
+  }
+
+  const codeKeywords = {
+    javascript: "const let var function return if else new class this",
+    python: "def return if elif else for in print class True False None",
+    java: "class static void int String if else return new true false",
+    css: "display grid flex color background gap",
+    html: "",
+  };
+
+  function highlightCode(value, language) {
+    if (!(language in codeKeywords)) return escapeHtml(value);
+    const keywords = codeKeywords[language].split(" ").filter(Boolean).join("|");
+    const keywordPattern = keywords ? `|\\b(?:${keywords})\\b` : "";
+    const pattern = new RegExp(
+      `(//[^\\n]*|#[^\\n]*|/\\*[\\s\\S]*?\\*/|<!--[\\s\\S]*?-->|<\\/?[\\w-]+[^>]*>|"(?:\\\\.|[^"\\\\])*"|'(?:\\\\.|[^'\\\\])*'|\\b\\d+(?:\\.\\d+)?\\b${keywordPattern})`,
+      "g",
+    );
+    let result = "";
+    let previousIndex = 0;
+    for (const match of value.matchAll(pattern)) {
+      const token = match[0];
+      result += escapeHtml(value.slice(previousIndex, match.index));
+      const type = token.startsWith("//") || token.startsWith("#") || token.startsWith("/*") || token.startsWith("<!--")
+        ? "comment"
+        : token.startsWith("<") ? "tag"
+          : /^["']/.test(token) ? "string"
+            : /^\d/.test(token) ? "number" : "keyword";
+      result += `<span class="syntax-${type}">${escapeHtml(token)}</span>`;
+      previousIndex = match.index + token.length;
+    }
+    return result + escapeHtml(value.slice(previousIndex));
+  }
+
+  function renderLearningLesson(lesson) {
+    const detail = $("#learning-lesson-detail");
+    const progress = lesson.progress;
+    detail.innerHTML = `<button class="text-button learning-back" data-action="learning-back-path">← ${escapeHtml(lesson.path.title)}</button>
+      <div class="learning-lesson-heading"><span class="eyebrow">${escapeHtml(lesson.module.title)}</span><h2>${escapeHtml(lesson.title)}</h2>${progress?.completed ? `<span class="learning-complete-badge">✓ Lesson completed</span>` : ""}</div>
+      <section class="learning-content-section"><h3>Learning objectives</h3><ul>${lesson.objectives.map((item) => `<li>${formatLearningText(item)}</li>`).join("")}</ul></section>
+      <section class="learning-content-section"><h3>Lesson</h3>${lesson.explanation.split(/\n\s*\n/).map((paragraph) => `<p>${formatLearningText(paragraph).replaceAll("\n", "<br>")}</p>`).join("")}</section>
+      <section class="learning-content-section"><h3>Step by step</h3><ol>${lesson.tutorial_steps.map((step) => `<li>${formatLearningText(step)}</li>`).join("")}</ol></section>
+      <section class="learning-content-section"><h3>Practical example</h3><p>${formatLearningText(lesson.practical_example)}</p></section>
+      ${lesson.code_examples.map((example) => `<section class="learning-content-section"><h3>${escapeHtml(example.title)} <span class="code-language">${escapeHtml(example.language)}</span></h3><pre class="learning-code-block"><code>${highlightCode(example.code, example.language)}</code></pre></section>`).join("")}
+      <section class="learning-task panel-card"><span class="eyebrow">PRACTICE</span><h3>Exercise</h3><p>${formatLearningText(lesson.exercise_prompt)}</p><form id="learning-exercise-form" class="learning-form"><label for="learning-exercise-response">Your response</label><textarea id="learning-exercise-response" name="response" maxlength="5000" required>${escapeHtml(progress?.exercise_response || "")}</textarea><button class="button button-primary" type="submit">${progress?.exercise_submitted ? "Update exercise" : "Submit exercise"}</button><p class="learning-form-status" id="learning-exercise-result" role="status">${progress?.exercise_submitted ? "Exercise response saved." : ""}</p></form></section>
+      <section class="learning-task panel-card"><span class="eyebrow">CHECK YOUR UNDERSTANDING</span><h3>Lesson quiz</h3><p class="learning-quiz-rule">Score at least ${lesson.passing_score}% and submit the exercise to complete this lesson.</p><form id="learning-quiz-form" class="learning-form">
+        ${lesson.quiz.map((question, questionIndex) => `<fieldset class="learning-question"><legend>${questionIndex + 1}. ${formatLearningText(question.question)}</legend>${question.choices.map((choice, choiceIndex) => `<label class="learning-choice"><input type="radio" name="question-${question.id}" value="${choiceIndex}" required><span>${formatLearningText(choice)}</span></label>`).join("")}</fieldset>`).join("")}
+        <button class="button button-primary" type="submit">Submit quiz</button><p class="learning-form-status" id="learning-quiz-result" role="status">${progress?.quiz_score !== null && progress?.quiz_score !== undefined ? `Best score: ${progress.quiz_score}%${progress.completed ? " · Lesson complete" : ""}` : ""}</p>
+      </form></section>
+      <div class="learning-lesson-navigation"><button class="button button-outline" data-action="open-learning-lesson" data-id="${lesson.previous_lesson_id || ""}" ${lesson.previous_lesson_id ? "" : "disabled"}>← Previous lesson</button><button class="button button-outline" data-action="open-learning-lesson" data-id="${lesson.next_lesson_id || ""}" ${lesson.next_lesson_id ? "" : "disabled"}>Next lesson →</button></div>`;
+    detail.hidden = false;
+    $("#learning-catalog").hidden = true;
+    $("#learning-path-detail").hidden = true;
+
+    $("#learning-exercise-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const button = $('button[type="submit"]', event.currentTarget);
+      button.disabled = true;
+      try {
+        const result = await API.submitLearningExercise(lesson.id, $("#learning-exercise-response").value);
+        await loadLearningPaths();
+        await openLearningLesson(lesson.id);
+        $("#learning-exercise-result").textContent = result.completed
+          ? "Exercise saved. Your lesson is complete."
+          : "Exercise saved. Pass the quiz to complete this lesson.";
+      } catch (error) {
+        $("#learning-exercise-result").textContent = error.message;
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    $("#learning-quiz-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const button = $('button[type="submit"]', form);
+      button.disabled = true;
+      try {
+        const answers = lesson.quiz.map((question) => {
+          const selected = new FormData(form).get(`question-${question.id}`);
+          if (selected === null) throw new Error("Choose an answer for every question.");
+          return Number(selected);
+        });
+        const result = await API.submitLearningQuiz(lesson.id, answers);
+        await loadLearningPaths();
+        await openLearningLesson(lesson.id);
+        $("#learning-quiz-result").textContent = `Score: ${result.score}% · Best: ${result.best_score}% · ${result.passed ? "Passed" : "Try again"}${result.completed ? " · Lesson complete" : " · Submit the exercise and pass the quiz to complete this lesson."}`;
+      } catch (error) {
+        $("#learning-quiz-result").textContent = error.message;
+      } finally {
+        button.disabled = false;
+      }
+    });
+  }
+
+  async function openLearningLesson(lessonId) {
+    const lesson = await API.learningLesson(lessonId);
+    state.activeLearningLesson = lesson;
+    renderLearningLesson(lesson);
   }
 
   function partnerName(exchange) {
@@ -435,8 +590,9 @@
     if (!panel) return;
     $$(".view-panel").forEach((item) => item.classList.toggle("active", item === panel));
     $$(".nav-link[data-view]").forEach((item) => item.classList.toggle("active", item.dataset.view === view));
-    $("#view-title").textContent = ({ courses: "Skills & Courses", exchanges: "Exchange Requests", profile: "My Profile", settings: "Settings", help: "Help & Support" })[view] || view.charAt(0).toUpperCase() + view.slice(1);
+    $("#view-title").textContent = ({ courses: "Skills & Courses", learning: "Learning Paths", exchanges: "Exchange Requests", profile: "My Profile", settings: "Settings", help: "Help & Support" })[view] || view.charAt(0).toUpperCase() + view.slice(1);
     if (view === "courses") loadCourses($("#course-search").value, $("#category-filter").value);
+    if (view === "learning") loadLearningPaths();
     if (view === "exchanges") loadExchanges();
     if (view === "messages") loadConversations();
     if (view === "notifications") loadNotifications();
@@ -560,6 +716,12 @@
     const id = Number(button.dataset.id);
     try {
       if (action === "browse") setView("courses");
+      if (action === "open-learning-path") await openLearningPath(button.dataset.slug);
+      if (action === "open-learning-lesson") await openLearningLesson(id);
+      if (action === "learning-back-path" && state.activeLearningPath) {
+        await openLearningPath(state.activeLearningPath.slug);
+      }
+      if (action === "learning-back-catalog") await loadLearningPaths();
       if (action === "publish") openSkillDialog();
       if (action === "request") openExchangeDialog(id);
       if (action === "edit-skill") {
@@ -775,9 +937,10 @@
     try {
       const user = await window.SkillSwapAuth.ready;
       if (!user) return;
-      await Promise.all([loadCategories(), loadDashboardData()]);
+      const [hasCategoryFilter] = await Promise.all([loadCategories(), loadDashboardData()]);
       await loadSchedule(true);
-      await loadCourses();
+      if (hasCategoryFilter) setView("courses");
+      else await loadCourses();
       await loadExchanges();
     } catch (error) {
       showFlash(error.message || "The dashboard could not be loaded.", true);

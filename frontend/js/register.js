@@ -20,6 +20,24 @@ const languageError = document.getElementById("languageError");
 const termsError = document.getElementById("termsError");
 
 const successMessage = document.getElementById("formSuccess");
+const passwordStrength = document.getElementById("password-strength");
+const passwordStrengthLabel = document.getElementById("password-strength-label");
+
+function updatePasswordStrength(value) {
+    const score = [
+        value.length >= 8,
+        value.length >= 12,
+        /[a-z]/.test(value) && /[A-Z]/.test(value),
+        /\d/.test(value),
+        /[^A-Za-z0-9]/.test(value)
+    ].filter(Boolean).length;
+    const level = score < 3 ? "weak" : score < 5 ? "good" : "strong";
+    passwordStrength.dataset.strength = value ? level : "";
+    passwordStrength.firstElementChild.style.width = `${score * 20}%`;
+    passwordStrengthLabel.textContent = value
+        ? `${level[0].toUpperCase()}${level.slice(1)} password`
+        : "Use 8+ characters for a stronger password";
+}
 
 function setError(input, errorField, message) {
     errorField.textContent = message;
@@ -205,6 +223,7 @@ email.addEventListener("input", () => {
 
 password.addEventListener("input", () => {
     const message = validatePassword(password.value);
+    updatePasswordStrength(password.value);
 
     if (message) {
         setError(password, passwordError, message);

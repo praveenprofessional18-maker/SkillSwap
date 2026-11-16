@@ -105,3 +105,11 @@ class ReportResolve(BaseModel):
 
 class UserStatusUpdate(BaseModel):
     is_active: bool
+
+
+class LearningExerciseSubmission(BaseModel):
+    response: str = Field(min_length=1, max_length=5000)
+
+
+class LearningQuizSubmission(BaseModel):
+    answers: list[int] = Field(min_length=1, max_length=20)

@@ -11,7 +11,7 @@
 
 body {
     font-family: Arial, Helvetica, sans-serif;
-    background: #07151c;
+    background: #0b1020;
     color: #ffffff;
     min-height: 100vh;
 }
@@ -47,7 +47,25 @@ body {
 }
 
 .brand-accent {
-    color: #7c5cff;
+    color: #38bdf8;
+}
+
+.brand-mark {
+    display: inline-grid;
+    width: 38px;
+    height: 38px;
+    margin-right: 7px;
+    overflow: hidden;
+    place-items: center;
+    vertical-align: middle;
+    border-radius: 12px;
+    background: #141b2d;
+}
+
+.brand-mark img {
+    display: block;
+    width: 100%;
+    height: 100%;
 }
 
 /* Visual section */
@@ -72,7 +90,7 @@ body {
 }
 
 .eyebrow {
-    color: #73d6b6;
+    color: #22c55e;
     font-size: 13px;
     font-weight: 700;
     letter-spacing: 2px;
@@ -98,7 +116,7 @@ body {
 }
 
 .register-card {
-    background: #10232d;
+    background: #141b2d;
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 20px;
     padding: 35px;
@@ -114,7 +132,7 @@ body {
 .status-dot {
     width: 9px;
     height: 9px;
-    background: #73d6b6;
+    background: #22c55e;
     border-radius: 50%;
     display: inline-block;
     margin-right: 7px;
@@ -125,7 +143,7 @@ body {
 }
 
 .welcome-kicker {
-    color: #73d6b6;
+    color: #38bdf8;
     font-size: 13px;
     margin-bottom: 10px;
 }
@@ -157,7 +175,7 @@ body {
 .input-wrap {
     display: flex;
     align-items: center;
-    background: #091a23;
+    background: #0b1222;
     border: 1px solid #29404c;
     border-radius: 9px;
     overflow: hidden;
@@ -165,7 +183,7 @@ body {
 }
 
 .input-wrap:focus-within {
-    border-color: #7c5cff;
+    border-color: #38bdf8;
 }
 
 .input-wrap input,
@@ -173,7 +191,7 @@ body {
 .field-group textarea {
     width: 100%;
     padding: 13px 14px;
-    background: #091a23;
+    background: #0b1222;
     border: 1px solid #29404c;
     border-radius: 9px;
     outline: none;
@@ -196,7 +214,7 @@ body {
 }
 
 .field-group select option {
-    background: #10232d;
+    background: #141b2d;
 }
 
 .field-group textarea {
@@ -207,7 +225,7 @@ body {
 .toggle-password {
     border: none;
     background: transparent;
-    color: #73d6b6;
+    color: #38bdf8;
     padding: 0 14px;
     cursor: pointer;
     font-weight: 600;
@@ -243,7 +261,7 @@ body {
 
 .checkbox-wrap input {
     margin-top: 3px;
-    accent-color: #7c5cff;
+    accent-color: #22c55e;
 }
 
 /* Register button */
@@ -253,7 +271,7 @@ body {
     padding: 15px;
     border: none;
     border-radius: 9px;
-    background: linear-gradient(135deg, #7c5cff, #6543df);
+    background: linear-gradient(135deg, #22c55e, #16a34a 60%, #38bdf8);
     color: #ffffff;
     font-size: 15px;
     font-weight: 700;
@@ -267,7 +285,7 @@ body {
 }
 
 .form-success {
-    color: #73d6b6;
+    color: #22c55e;
     font-size: 13px;
     margin-top: 15px;
     line-height: 1.5;
@@ -289,6 +307,38 @@ body {
     opacity: 0.75;
 }
 
+.password-strength {
+    height: 4px;
+    overflow: hidden;
+    margin-top: 10px;
+    border-radius: 5px;
+    background: #263248;
+}
+
+.password-strength span {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: #ef4444;
+    transition: width .2s ease, background-color .2s ease;
+}
+
+.password-strength[data-strength="good"] span {
+    background: #f59e0b;
+}
+
+.password-strength[data-strength="strong"] span {
+    background: #22c55e;
+}
+
+.password-strength-label {
+    min-height: 16px;
+    margin-top: 5px;
+    color: #94a3b8;
+    font-size: 11px;
+}
+
 .login-copy {
     text-align: center;
     color: #aab8c0;
@@ -297,7 +347,7 @@ body {
 }
 
 .text-link {
-    color: #73d6b6;
+    color: #38bdf8;
     text-decoration: none;
     font-weight: 700;
 }
