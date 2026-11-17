@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 import re
+from urllib.parse import urlsplit
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
@@ -11,10 +12,29 @@ from sqlalchemy import DDL, inspect, update
 from . import models
 from .config import ADMIN_EMAIL, ADMIN_PASSWORD, CATEGORIES, FRONTEND_ORIGIN, UPLOAD_DIR, validate_settings
 from .database import Base, SessionLocal, engine
+from .learning_catalog import initialize_learning_catalog
+from .routers.learning import router as learning_router
 from .routers.api import router
 from .security import hash_password
 
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def allowed_frontend_origins(frontend_origin: str) -> list[str]:
+    origins: set[str] = set()
+    for raw_origin in frontend_origin.split(","):
+        origin = raw_origin.strip().rstrip("/")
+        if not origin:
+            continue
+        origins.add(origin)
+        parsed = urlsplit(origin)
+        if parsed.hostname in {"localhost", "127.0.0.1"}:
+            port = f":{parsed.port}" if parsed.port else ""
+            origins.update(
+                f"{parsed.scheme}://{host}{port}"
+                for host in ("localhost", "127.0.0.1")
+            )
+    return sorted(origins)
 
 
 def migrate_legacy_users():
@@ -62,6 +82,7 @@ def initialize_database():
             if db.query(models.SkillCategory.id).filter(models.SkillCategory.name == name).first() is None:
                 db.add(models.SkillCategory(name=name))
         db.commit()
+        initialize_learning_catalog(db)
         if ADMIN_EMAIL and ADMIN_PASSWORD and not db.query(models.User.id).filter(models.User.role == "admin").first():
             username = ADMIN_EMAIL.split("@")[0][:32]
             if db.query(models.User.id).filter(models.User.username == username).first():
@@ -87,7 +108,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="SkillSwap API", version="1.0.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[FRONTEND_ORIGIN],
+    allow_origins=allowed_frontend_origins(FRONTEND_ORIGIN),
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type"],
@@ -129,4 +150,5 @@ def health():
 
 
 app.include_router(router, prefix="/api")
+app.include_router(learning_router, prefix="/api")
 app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")

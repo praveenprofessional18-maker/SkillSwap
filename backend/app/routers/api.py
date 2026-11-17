@@ -1,9 +1,11 @@
+import hashlib
 import re
 import time
 from collections import defaultdict, deque
 from datetime import datetime, timezone
 from pathlib import Path
 
+import jwt
 from fastapi import APIRouter, Depends, File, HTTPException, Query, Request, UploadFile
 from sqlalchemy import func, or_
 from sqlalchemy.exc import IntegrityError
@@ -11,17 +13,18 @@ from sqlalchemy.orm import Session
 
 from ..config import CATEGORIES, RATE_LIMIT_AUTH, UPLOAD_DIR
 from ..database import get_db
-from ..dependencies import get_current_user, get_optional_user, require_admin
+from ..dependencies import get_current_user, get_optional_user, oauth2_scheme, require_admin
 from ..models import (
-    Comment, ExchangeRequest, Like, Notification, Post, PostMedia, Report, Skill,
-    SkillCategory, SkillExchange, User, UserLearningSkill, UserProfile, user_teaching_skills,
+    Comment, ExchangeRequest, Like, Message, Notification, Post, PostMedia, Report,
+    RevokedToken, ScheduleEvent, Skill, SkillCategory, SkillExchange, User,
+    UserLearningSkill, UserProfile, user_teaching_skills,
 )
 from ..schemas import (
     CommentCreate, ExchangeCreate, ExchangeDuration, LearningSkillCreate, LikeAction, LoginIn,
-    PostCreate, ProfileUpdate, RegisterIn, ReportCreate, ReportResolve, SkillCreate,
-    UserStatusUpdate,
+    MessageCreate, PostCreate, ProfileUpdate, RegisterIn, ReportCreate, ReportResolve,
+    ScheduleEventCreate, SkillCreate, UserStatusUpdate,
 )
-from ..security import create_access_token, hash_password, verify_password
+from ..security import ALGORITHM, JWT_SECRET, create_access_token, hash_password, verify_password
 from ..services.exchange_service import (
     accept_request, combination, counter_request, create_request, exchange_view,
     get_participant_request, maybe_notify_near_end, remaining_days, request_view,
@@ -121,6 +124,22 @@ def login(data: LoginIn, db: Session = Depends(get_db)):
     if user is None or not verify_password(data.password, user.password_hash) or not user.is_active:
         raise HTTPException(401, detail={"detail": "Invalid email or password", "code": "invalid_credentials"})
     return {"access_token": create_access_token(user.id), "token_type": "bearer"}
+
+
+@router.post("/auth/logout", status_code=204, tags=["auth"])
+def logout(
+    token: str = Depends(oauth2_scheme),
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    payload = jwt.decode(token, JWT_SECRET, algorithms=[ALGORITHM])
+    expires_at = datetime.fromtimestamp(payload["exp"], timezone.utc)
+    token_hash = hashlib.sha256(token.encode("ascii")).hexdigest()
+    db.query(RevokedToken).filter(RevokedToken.expires_at <= datetime.now(timezone.utc)).delete(
+        synchronize_session=False
+    )
+    db.add(RevokedToken(token_hash=token_hash, expires_at=expires_at))
+    db.commit()
 
 
 @router.get("/auth/me", tags=["auth"])
@@ -598,6 +617,178 @@ def cancel_exchange(exchange_id: int, db: Session = Depends(get_db), user: User 
     return update_exchange_status(exchange_id, "cancelled", db, user)
 
 
+def exchange_for_participant(db: Session, exchange_id: int, user_id: int):
+    exchange = db.query(SkillExchange).filter(
+        SkillExchange.id == exchange_id,
+        or_(SkillExchange.requester_id == user_id, SkillExchange.receiver_id == user_id),
+    ).first()
+    if exchange is None:
+        raise HTTPException(404, detail={"detail": "Exchange not found", "code": "not_found"})
+    return exchange
+
+
+def message_dict(db: Session, message: Message):
+    sender = db.query(User).filter(User.id == message.sender_id).first()
+    return {
+        "id": message.id,
+        "exchange_id": message.exchange_id,
+        "sender_id": message.sender_id,
+        "sender_name": sender.username if sender else "Former member",
+        "body": message.body,
+        "read_at": message.read_at,
+        "created_at": message.created_at,
+    }
+
+
+@router.get("/messages", tags=["messages"])
+def messages(
+    exchange_id: int | None = Query(default=None, ge=1),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(100, ge=1, le=100),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    if exchange_id is None:
+        exchanges = db.query(SkillExchange).filter(
+            or_(SkillExchange.requester_id == user.id, SkillExchange.receiver_id == user.id)
+        ).order_by(SkillExchange.created_at.desc()).all()
+        conversations = []
+        for exchange in exchanges:
+            partner_id = exchange.receiver_id if exchange.requester_id == user.id else exchange.requester_id
+            last_message = db.query(Message).filter(
+                Message.exchange_id == exchange.id
+            ).order_by(Message.created_at.desc(), Message.id.desc()).first()
+            unread = db.query(Message.id).filter(
+                Message.exchange_id == exchange.id,
+                Message.sender_id != user.id,
+                Message.read_at.is_(None),
+            ).count()
+            partner = db.query(User).filter(User.id == partner_id).first()
+            conversations.append({
+                "exchange_id": exchange.id,
+                "partner_id": partner_id,
+                "partner_name": partner.username if partner else "Former member",
+                "status": exchange.status,
+                "unread_count": unread,
+                "last_message": message_dict(db, last_message) if last_message else None,
+            })
+        conversations.sort(
+            key=lambda item: (
+                item["last_message"]["created_at"] if item["last_message"] else datetime.min.replace(tzinfo=timezone.utc)
+            ),
+            reverse=True,
+        )
+        total = len(conversations)
+        start = (page - 1) * page_size
+        return page_result(conversations[start:start + page_size], total, page, page_size)
+
+    exchange_for_participant(db, exchange_id, user.id)
+    query = db.query(Message).filter(Message.exchange_id == exchange_id)
+    rows, total = page_query(query.order_by(Message.created_at, Message.id), page, page_size)
+    now = datetime.now(timezone.utc)
+    db.query(Message).filter(
+        Message.exchange_id == exchange_id,
+        Message.sender_id != user.id,
+        Message.read_at.is_(None),
+    ).update({Message.read_at: now}, synchronize_session=False)
+    db.commit()
+    return page_result([message_dict(db, row) for row in rows], total, page, page_size)
+
+
+@router.get("/messages/unread-count", tags=["messages"])
+def unread_message_count(db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    count = db.query(Message.id).join(
+        SkillExchange, SkillExchange.id == Message.exchange_id
+    ).filter(
+        Message.sender_id != user.id,
+        Message.read_at.is_(None),
+        or_(SkillExchange.requester_id == user.id, SkillExchange.receiver_id == user.id),
+    ).count()
+    return {"unread_count": count}
+
+
+@router.post("/messages", status_code=201, tags=["messages"])
+def send_message(data: MessageCreate, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    exchange = exchange_for_participant(db, data.exchange_id, user.id)
+    body = data.body.strip()
+    if not body:
+        raise HTTPException(422, detail={"detail": "Message cannot be blank", "code": "validation_error"})
+    message = Message(exchange_id=exchange.id, sender_id=user.id, body=body)
+    recipient_id = exchange.receiver_id if exchange.requester_id == user.id else exchange.requester_id
+    db.add(message)
+    notify(db, recipient_id, "new_message", f"{user.username} sent you a message.", "message", exchange.id)
+    db.commit()
+    db.refresh(message)
+    return message_dict(db, message)
+
+
+def schedule_event_dict(event: ScheduleEvent):
+    return {
+        "id": event.id,
+        "exchange_id": event.exchange_id,
+        "creator_id": event.creator_id,
+        "title": event.title,
+        "starts_at": event.starts_at,
+        "created_at": event.created_at,
+    }
+
+
+@router.get("/schedule", tags=["schedule"])
+def schedule(
+    month: str | None = None,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(100, ge=1, le=100),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    query = db.query(ScheduleEvent).join(
+        SkillExchange, SkillExchange.id == ScheduleEvent.exchange_id
+    ).filter(or_(SkillExchange.requester_id == user.id, SkillExchange.receiver_id == user.id))
+    if month:
+        if not re.fullmatch(r"\d{4}-\d{2}", month):
+            raise HTTPException(422, detail={"detail": "Month must use YYYY-MM format", "code": "validation_error"})
+        try:
+            month_start = datetime.strptime(month, "%Y-%m").replace(tzinfo=timezone.utc)
+        except ValueError:
+            raise HTTPException(422, detail={"detail": "Month must be a valid calendar month", "code": "validation_error"})
+        year, month_number = month_start.year, month_start.month
+        if month_number == 12:
+            month_end = month_start.replace(year=year + 1, month=1)
+        else:
+            month_end = month_start.replace(month=month_number + 1)
+        query = query.filter(ScheduleEvent.starts_at >= month_start, ScheduleEvent.starts_at < month_end)
+    rows, total = page_query(query.order_by(ScheduleEvent.starts_at), page, page_size)
+    return page_result([schedule_event_dict(row) for row in rows], total, page, page_size)
+
+
+@router.post("/schedule", status_code=201, tags=["schedule"])
+def create_schedule_event(
+    data: ScheduleEventCreate,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    exchange = exchange_for_participant(db, data.exchange_id, user.id)
+    starts_at = data.starts_at.astimezone(timezone.utc)
+    now = datetime.now(timezone.utc)
+    end_date = exchange.end_date
+    if end_date.tzinfo is None:
+        end_date = end_date.replace(tzinfo=timezone.utc)
+    if exchange.status != "active" or starts_at <= now or starts_at > end_date:
+        raise HTTPException(409, detail={"detail": "Schedule the meeting during an active exchange", "code": "invalid_schedule"})
+    event = ScheduleEvent(
+        exchange_id=exchange.id, creator_id=user.id,
+        title=data.title.strip(), starts_at=starts_at,
+    )
+    if not event.title:
+        raise HTTPException(422, detail={"detail": "Meeting title cannot be blank", "code": "validation_error"})
+    recipient_id = exchange.receiver_id if exchange.requester_id == user.id else exchange.requester_id
+    db.add(event)
+    notify(db, recipient_id, "schedule_event", f"{user.username} scheduled an exchange meeting.", "schedule_event", event.id)
+    db.commit()
+    db.refresh(event)
+    return schedule_event_dict(event)
+
+
 @router.get("/notifications", tags=["notifications"])
 def notifications(page: int = Query(1, ge=1), page_size: int = Query(20, ge=1, le=100),
                   db: Session = Depends(get_db), user: User = Depends(get_current_user)):
@@ -647,8 +838,12 @@ def search(
         users = uq.order_by(User.created_at.desc()).all()
         results.extend({"type": "user", **profile_dict(db, u)} for u in users)
     if type in ("all", "skills"):
-        sq = db.query(Skill, SkillCategory.name).join(SkillCategory).join(User, User.id == Skill.owner_id).filter(
-            User.is_active.is_(True), Skill.name.ilike(term))
+        sq = db.query(Skill, SkillCategory.name, User.username).join(SkillCategory).join(
+            User, User.id == Skill.owner_id
+        ).filter(
+            User.is_active.is_(True),
+            or_(Skill.name.ilike(term), User.username.ilike(term), User.name.ilike(term)),
+        )
         if category:
             sq = sq.filter(SkillCategory.name.ilike(category))
         if level:
@@ -656,9 +851,9 @@ def search(
         if availability:
             sq = sq.join(UserProfile, UserProfile.user_id == User.id).filter(UserProfile.availability.ilike(f"%{availability}%"))
         entries = sq.order_by(Skill.created_at.desc()).all()
-        results.extend({"type": "skill", "id": s.id, "owner_id": s.owner_id, "name": s.name,
+        results.extend({"type": "skill", "id": s.id, "owner_id": s.owner_id, "owner_username": username, "name": s.name,
                         "category": cat, "description": s.description, "experience_level": s.experience_level,
-                        "created_at": s.created_at} for s, cat in entries)
+                        "created_at": s.created_at} for s, cat, username in entries)
     if type in ("all", "categories"):
         cats = db.query(SkillCategory).filter(SkillCategory.name.ilike(term)).all()
         results.extend({"type": "category", "id": c.id, "name": c.name} for c in cats)

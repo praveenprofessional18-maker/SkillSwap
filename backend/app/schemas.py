@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import AwareDatetime, BaseModel, EmailStr, Field, field_validator
 
 LEVELS = ("Beginner", "Intermediate", "Advanced", "Expert")
 
@@ -82,6 +82,17 @@ class ExchangeDuration(BaseModel):
     duration_days: int = Field(ge=1, le=365)
 
 
+class MessageCreate(BaseModel):
+    exchange_id: int = Field(ge=1)
+    body: str = Field(min_length=1, max_length=2000)
+
+
+class ScheduleEventCreate(BaseModel):
+    exchange_id: int = Field(ge=1)
+    title: str = Field(min_length=3, max_length=120)
+    starts_at: AwareDatetime
+
+
 class ReportCreate(BaseModel):
     target_type: Literal["post", "comment"] = "post"
     target_id: int | None = None
@@ -94,3 +105,11 @@ class ReportResolve(BaseModel):
 
 class UserStatusUpdate(BaseModel):
     is_active: bool
+
+
+class LearningExerciseSubmission(BaseModel):
+    response: str = Field(min_length=1, max_length=5000)
+
+
+class LearningQuizSubmission(BaseModel):
+    answers: list[int] = Field(min_length=1, max_length=20)

@@ -204,6 +204,32 @@ class Notification(Base):
     )
 
 
+class RevokedToken(Base):
+    __tablename__ = "revoked_tokens"
+    token_hash = Column(String(64), primary_key=True)
+    expires_at = Column(UTCDateTime(), nullable=False, index=True)
+
+
+class Message(Base):
+    __tablename__ = "messages"
+    id = Column(Integer, primary_key=True)
+    exchange_id = Column(ForeignKey("skill_exchanges.id", ondelete="CASCADE"), nullable=False, index=True)
+    sender_id = Column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    body = Column(String(2000), nullable=False)
+    read_at = Column(UTCDateTime())
+    created_at = Column(UTCDateTime(), nullable=False, server_default=func.now(), index=True)
+
+
+class ScheduleEvent(Base):
+    __tablename__ = "schedule_events"
+    id = Column(Integer, primary_key=True)
+    exchange_id = Column(ForeignKey("skill_exchanges.id", ondelete="CASCADE"), nullable=False, index=True)
+    creator_id = Column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    title = Column(String(120), nullable=False)
+    starts_at = Column(UTCDateTime(), nullable=False, index=True)
+    created_at = Column(UTCDateTime(), nullable=False, server_default=func.now())
+
+
 class Report(Base):
     __tablename__ = "reports"
     id = Column(Integer, primary_key=True)
@@ -214,3 +240,70 @@ class Report(Base):
     status = Column(String(20), nullable=False, default="open", index=True)
     created_at = Column(UTCDateTime(), nullable=False, server_default=func.now())
     resolved_by = Column(ForeignKey("users.id", ondelete="SET NULL"))
+
+
+class LearningPath(Base):
+    __tablename__ = "learning_paths"
+    id = Column(Integer, primary_key=True)
+    slug = Column(String(100), unique=True, nullable=False, index=True)
+    title = Column(String(160), nullable=False)
+    description = Column(Text, nullable=False)
+    difficulty = Column(String(20), nullable=False, default="Beginner")
+    estimated_minutes = Column(Integer, nullable=False, default=0)
+    position = Column(Integer, nullable=False, default=0)
+
+
+class LearningModule(Base):
+    __tablename__ = "learning_modules"
+    id = Column(Integer, primary_key=True)
+    path_id = Column(ForeignKey("learning_paths.id", ondelete="CASCADE"), nullable=False, index=True)
+    slug = Column(String(100), nullable=False)
+    title = Column(String(160), nullable=False)
+    description = Column(Text, nullable=False)
+    position = Column(Integer, nullable=False)
+    __table_args__ = (
+        UniqueConstraint("path_id", "slug", name="uq_learning_module_path_slug"),
+        UniqueConstraint("path_id", "position", name="uq_learning_module_path_position"),
+    )
+
+
+class LearningLesson(Base):
+    __tablename__ = "learning_lessons"
+    id = Column(Integer, primary_key=True)
+    module_id = Column(ForeignKey("learning_modules.id", ondelete="CASCADE"), nullable=False, index=True)
+    slug = Column(String(120), unique=True, nullable=False, index=True)
+    title = Column(String(160), nullable=False)
+    position = Column(Integer, nullable=False)
+    objectives = Column(JSON, nullable=False, default=list)
+    explanation = Column(Text, nullable=False)
+    tutorial_steps = Column(JSON, nullable=False, default=list)
+    practical_example = Column(Text, nullable=False)
+    code_examples = Column(JSON, nullable=False, default=list)
+    exercise_prompt = Column(Text, nullable=False)
+    __table_args__ = (UniqueConstraint("module_id", "position", name="uq_learning_lesson_module_position"),)
+
+
+class LearningQuizQuestion(Base):
+    __tablename__ = "learning_quiz_questions"
+    id = Column(Integer, primary_key=True)
+    lesson_id = Column(ForeignKey("learning_lessons.id", ondelete="CASCADE"), nullable=False, index=True)
+    question = Column(Text, nullable=False)
+    choices = Column(JSON, nullable=False)
+    correct_option = Column(Integer, nullable=False)
+    position = Column(Integer, nullable=False)
+    __table_args__ = (UniqueConstraint("lesson_id", "position", name="uq_learning_quiz_lesson_position"),)
+
+
+class UserLessonProgress(Base):
+    __tablename__ = "user_lesson_progress"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    lesson_id = Column(ForeignKey("learning_lessons.id", ondelete="CASCADE"), nullable=False, index=True)
+    exercise_response = Column(Text, nullable=False, default="")
+    exercise_submitted = Column(Boolean, nullable=False, default=False)
+    quiz_score = Column(Integer)
+    quiz_attempts = Column(Integer, nullable=False, default=0)
+    completed_at = Column(UTCDateTime())
+    __table_args__ = (
+        UniqueConstraint("user_id", "lesson_id", name="uq_user_learning_lesson_progress"),
+    )
