@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
+from pydantic import EmailStr, TypeAdapter
 
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
@@ -30,3 +31,8 @@ def validate_settings():
         raise RuntimeError("JWT_EXPIRE_MINUTES must be a positive integer")
     if MAX_EXCHANGES_PER_COMBINATION != 2:
         raise RuntimeError("MAX_EXCHANGES_PER_COMBINATION is fixed at 2 by the exchange rules")
+    if ADMIN_EMAIL:
+        try:
+            TypeAdapter(EmailStr).validate_python(ADMIN_EMAIL)
+        except ValueError as exc:
+            raise RuntimeError("ADMIN_EMAIL must be a valid email address") from exc

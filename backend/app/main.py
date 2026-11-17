@@ -21,15 +21,19 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def allowed_frontend_origins(frontend_origin: str) -> list[str]:
-    origin = frontend_origin.rstrip("/")
-    origins = {origin}
-    parsed = urlsplit(origin)
-    if parsed.hostname in {"localhost", "127.0.0.1"}:
-        port = f":{parsed.port}" if parsed.port else ""
-        origins.update(
-            f"{parsed.scheme}://{host}{port}"
-            for host in ("localhost", "127.0.0.1")
-        )
+    origins: set[str] = set()
+    for raw_origin in frontend_origin.split(","):
+        origin = raw_origin.strip().rstrip("/")
+        if not origin:
+            continue
+        origins.add(origin)
+        parsed = urlsplit(origin)
+        if parsed.hostname in {"localhost", "127.0.0.1"}:
+            port = f":{parsed.port}" if parsed.port else ""
+            origins.update(
+                f"{parsed.scheme}://{host}{port}"
+                for host in ("localhost", "127.0.0.1")
+            )
     return sorted(origins)
 
 
